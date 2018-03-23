@@ -18,5 +18,7 @@ namespace AirScheduling.Genetics
             _aircraft = aircraft;
             _runway = runway;
         }
+        
+        
     }
 }
