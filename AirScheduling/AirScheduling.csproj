@@ -56,6 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aviation\Aircraft.cs" />
+    <Compile Include="Aviation\Airport.cs" />
+    <Compile Include="Genetics\Gene.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
