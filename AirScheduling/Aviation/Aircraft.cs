@@ -14,7 +14,6 @@ namespace AirScheduling.Aviation
     
     public class Aircraft
     {
-
         private AircraftType _aircraftType;
         private double _maxSpeed, _optimalSpeed, _minSpeed;
         private DateTime _timeOfNextFlight;

@@ -1,0 +1,4 @@
+flightID, aircraftId, urgency, time of next flight, prec
+1, 2, true, 47, 0
+2, 1, false, 50, 0
+3, 3, false, 30, 1
