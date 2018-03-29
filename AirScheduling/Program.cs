@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using AirScheduling.Aviation;
 using GeneticSharp.Domain;
 using GeneticSharp.Domain.Crossovers;
@@ -15,14 +16,29 @@ namespace AirScheduling
 {
     internal class AirScheduling
     {
-        
+        private const string Airport = "1";
         private static List<Aircraft> _aircraftModels = new List<Aircraft>();
-        
+        private static ConcurrentDictionary<string, AircraftRadar>  _aircraftRadars = 
+            new ConcurrentDictionary<string, AircraftRadar>();
+        private static Thread radar;
         
         public static void Main(string[] args)
         {
-
+            int i = 0;
             read_configuration_files();
+            radar.Start();
+            
+            while (true)
+            {
+                i += 2000;
+                Thread.Sleep(2000);
+                Console.WriteLine(i);
+                foreach (var k in _aircraftRadars.Keys)
+                {
+                    Console.WriteLine(k);
+                }
+                Console.WriteLine("___");
+            }
             /*
             var selection = new EliteSelection();
             var crossover = new OrderedCrossover();
@@ -51,6 +67,7 @@ namespace AirScheduling
             try
             {
                 var aircraftTypes = read_aircraft_database("../../Data/AircraftDatabase.csv");
+                radar = new Thread(() => read_radar_thread("../../Data/Airport" + Airport + "/Radar.csv"));
                 
             }
             catch (Exception e)
@@ -80,9 +97,9 @@ namespace AirScheduling
 
                     var model = splittedLine[1];
                     var type = Aircraft.convert_string_into_AicraftType(splittedLine[2]);
-                    var minimumSpeed = Double.Parse(splittedLine[3]);
-                    var optimalSpeed = Double.Parse(splittedLine[4]);
-                    var maximumSpeed = Double.Parse(splittedLine[5]);
+                    var minimumSpeed = double.Parse(splittedLine[3]);
+                    var optimalSpeed = double.Parse(splittedLine[4]);
+                    var maximumSpeed = double.Parse(splittedLine[5]);
                 
                     var aircraftSpecification = new Aircraft(type, model, minimumSpeed, optimalSpeed, maximumSpeed);
                     AirScheduling._aircraftModels.Add(aircraftSpecification);
@@ -95,6 +112,46 @@ namespace AirScheduling
             }
             
             return true;
+        }
+
+        /// <summary>
+        /// Function running in background in order to add aircrafts that are present in airport's airspace
+        /// </summary>
+        /// <param name="fileUrl">Url of the file that simulates radar - Radar.csv</param>
+        /// <returns>Void</returns>
+        private static void read_radar_thread(string fileUrl)
+        {
+            while (true)
+            {
+                try
+                {
+                    var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
+
+                    foreach (var line in lines)
+                    {
+                        var splittedLine = line.Split(',');
+
+                        var flighId = splittedLine[0];
+                        var aircrafId = int.Parse(splittedLine[1]);
+                        var urgency = bool.Parse(splittedLine[2]);
+                        var timeNextFlight = double.Parse(splittedLine[3]);
+                        var prec = splittedLine[4];
+
+                        if (AirScheduling._aircraftRadars.ContainsKey(flighId))
+                            continue;
+
+                        var aicraftInRadar = new AircraftRadar(flighId, AirScheduling._aircraftModels[aircrafId - 1],
+                            timeNextFlight, urgency);
+
+                        _aircraftRadars.TryAdd(flighId, aicraftInRadar);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
         }
     }
 }
