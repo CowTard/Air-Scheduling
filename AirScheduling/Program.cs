@@ -153,5 +153,46 @@ namespace AirScheduling
                 }
             }
         }
+        
+        /// <summary>
+        /// Function responsible for parsing the files Runways.csv present in the folder of the active airport
+        /// </summary>
+        /// <param name="fileUrl">Url for the Runways.csv file</param>
+        /// <returns>True if there are no errors, false otherwise</returns>
+        private static bool read_runway_information(string fileUrl)
+        {
+            
+            try
+            {
+                var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
+
+                foreach (var line in lines)
+                {
+                    var splittedLine = line.Split(',');
+
+                    var flighId = splittedLine[0];
+                    var aircrafId = int.Parse(splittedLine[1]);
+                    var urgency = bool.Parse(splittedLine[2]);
+                    var timeNextFlight = double.Parse(splittedLine[3]);
+                    var prec = splittedLine[4];
+
+                    if (AirScheduling._aircraftRadars.ContainsKey(flighId))
+                        continue;
+
+                    var aicraftInRadar = new AircraftRadar(flighId, AirScheduling._aircraftModels[aircrafId - 1],
+                        timeNextFlight, urgency);
+
+                    _aircraftRadars.TryAdd(flighId, aicraftInRadar);
+                }
+                
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+        
     }
 }
