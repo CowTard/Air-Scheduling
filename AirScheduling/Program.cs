@@ -21,24 +21,16 @@ namespace AirScheduling
         private static ConcurrentDictionary<string, AircraftRadar>  _aircraftRadars = 
             new ConcurrentDictionary<string, AircraftRadar>();
         private static Thread radar;
+
+
+        public static Airport _currentAirport = new Airport();
         
         public static void Main(string[] args)
         {
-            int i = 0;
             read_configuration_files();
             radar.Start();
             
-            while (true)
-            {
-                i += 2000;
-                Thread.Sleep(2000);
-                Console.WriteLine(i);
-                foreach (var k in _aircraftRadars.Keys)
-                {
-                    Console.WriteLine(k);
-                }
-                Console.WriteLine("___");
-            }
+            
             /*
             var selection = new EliteSelection();
             var crossover = new OrderedCrossover();
@@ -170,19 +162,11 @@ namespace AirScheduling
                 {
                     var splittedLine = line.Split(',');
 
-                    var flighId = splittedLine[0];
-                    var aircrafId = int.Parse(splittedLine[1]);
-                    var urgency = bool.Parse(splittedLine[2]);
-                    var timeNextFlight = double.Parse(splittedLine[3]);
-                    var prec = splittedLine[4];
+                    var identification = splittedLine[0];
+                    var permissions = splittedLine[1];
+                    
+                    _currentAirport.Runways.Add(new Airport.Runway(identification, permissions));
 
-                    if (AirScheduling._aircraftRadars.ContainsKey(flighId))
-                        continue;
-
-                    var aicraftInRadar = new AircraftRadar(flighId, AirScheduling._aircraftModels[aircrafId - 1],
-                        timeNextFlight, urgency);
-
-                    _aircraftRadars.TryAdd(flighId, aicraftInRadar);
                 }
                 
                 return true;

@@ -1,9 +1,13 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AirScheduling.Aviation
 {
     public class Airport
     {
+        public List<Runway> Runways { get; set; }
+
+
         public class Runway
         {
             private string _identication;
