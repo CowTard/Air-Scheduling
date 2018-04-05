@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -63,6 +64,10 @@ namespace AirScheduling
                 
                 if (allRunways != null)
                     _currentAirport = new Airport(allRunways);
+                
+                var timeInterf = read_runway_time_interference("../../Data/Airport" + Airport + "/Runway_times.csv");
+                
+                
                 
             }
             catch (Exception e)
@@ -179,6 +184,26 @@ namespace AirScheduling
                 Console.WriteLine(e);
                 return null;
             }
+        }
+        
+        /// <summary>
+        /// Function responsible for reading and handling the file that contains interferences times between runways
+        /// </summary>
+        /// <param name="fileUrl">Url for the file to be read</param>
+        /// <returns>A list of list of string</returns>
+        private static List<List<string>> read_runway_time_interference(string fileUrl)
+        {
+            var interferences = new List<List<string>>();
+            
+            var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
+            foreach (var line in lines)
+            {
+                var runwayInterference = line.Replace("[", string.Empty).Replace("]", string.Empty).Split(',').ToList();
+
+                interferences.Add(runwayInterference);
+            }
+
+            return interferences;
         }
         
         
