@@ -195,9 +195,15 @@ namespace AirScheduling
         {
             var interferences = new List<List<string>>();
             
-            var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
-            foreach (var line in lines)
+            var lines = File.ReadAllLines(fileUrl).ToArray();
+            string[] runways;
+            
+            for(var i = 0; i < lines.Length; i++)
             {
+                var line = lines[i];
+                
+                if (i == 0)
+                    runways = line.Split()
                 var runwayInterference = line.Replace("[", string.Empty).Replace("]", string.Empty).Split(',').ToList();
 
                 interferences.Add(runwayInterference);
