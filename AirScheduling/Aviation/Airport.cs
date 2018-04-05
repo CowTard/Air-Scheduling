@@ -5,13 +5,13 @@ namespace AirScheduling.Aviation
 {
     public class Airport
     {
-        private readonly List<Runway> _runways;
+        private readonly Dictionary<string, Runway> _runways;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        /// <param name="runways">List of all the aircrafts</param>
-        public Airport(List<Runway> runways)
+        /// <param name="runways">Dictionary of all the runways</param>
+        public Airport(Dictionary<string, Runway> runways)
         {
             _runways = runways;
         }
@@ -33,7 +33,6 @@ namespace AirScheduling.Aviation
                     {"Medium", permissions.Contains("Medium")},
                     {"Light", permissions.Contains("Light")}
                 };
-
             }
         }   
     }
