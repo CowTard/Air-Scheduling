@@ -22,8 +22,7 @@ namespace AirScheduling
             new ConcurrentDictionary<string, AircraftRadar>();
         private static Thread radar;
 
-
-        public static Airport _currentAirport = new Airport();
+        private static Airport _currentAirport;
         
         public static void Main(string[] args)
         {
@@ -60,6 +59,10 @@ namespace AirScheduling
             {
                 var aircraftTypes = read_aircraft_database("../../Data/AircraftDatabase.csv");
                 radar = new Thread(() => read_radar_thread("../../Data/Airport" + Airport + "/Radar.csv"));
+                var allRunways = read_runway_information("../../Data/Airport" + Airport + "/Runways.csv");
+                
+                if (allRunways != null)
+                    _currentAirport = new Airport(allRunways);
                 
             }
             catch (Exception e)
@@ -151,9 +154,9 @@ namespace AirScheduling
         /// </summary>
         /// <param name="fileUrl">Url for the Runways.csv file</param>
         /// <returns>True if there are no errors, false otherwise</returns>
-        private static bool read_runway_information(string fileUrl)
+        private static List<Airport.Runway> read_runway_information(string fileUrl)
         {
-            
+            var allRunways = new List<Airport.Runway>();
             try
             {
                 var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
@@ -165,18 +168,19 @@ namespace AirScheduling
                     var identification = splittedLine[0];
                     var permissions = splittedLine[1];
                     
-                    _currentAirport.Runways.Add(new Airport.Runway(identification, permissions));
+                    allRunways.Add(new Airport.Runway(identification, permissions));
 
                 }
-                
-                return true;
+
+                return allRunways;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return null;
             }
         }
+        
         
     }
 }
