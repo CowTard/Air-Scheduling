@@ -154,9 +154,9 @@ namespace AirScheduling
         /// </summary>
         /// <param name="fileUrl">Url for the Runways.csv file</param>
         /// <returns>True if there are no errors, false otherwise</returns>
-        private static List<Airport.Runway> read_runway_information(string fileUrl)
+        private static Dictionary<string, Airport.Runway> read_runway_information(string fileUrl)
         {
-            var allRunways = new List<Airport.Runway>();
+            var allRunways = new Dictionary<string, Airport.Runway>();
             try
             {
                 var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
@@ -168,7 +168,7 @@ namespace AirScheduling
                     var identification = splittedLine[0];
                     var permissions = splittedLine[1];
                     
-                    allRunways.Add(new Airport.Runway(identification, permissions));
+                    allRunways.Add(identification, new Airport.Runway(identification, permissions));
 
                 }
 
