@@ -56,6 +56,9 @@ namespace AirScheduling.Aviation
             /// <param name="timeDependency">Integer representing time between landings</param>
             public void AddTimeDependecy(string runway, (string, string) pairTypeAircraft, int timeDependency)
             {
+                if (!_timeDependency.ContainsKey(runway))
+                    _timeDependency.Add(runway, new Dictionary<(string, string), int>());
+                
                 if (_timeDependency[runway].ContainsKey(pairTypeAircraft))
                     throw new InvalidOperationException();
                 

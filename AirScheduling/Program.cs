@@ -79,14 +79,16 @@ namespace AirScheduling
                     {
                         var pickingSecondRunway = pickedFirstRunway[j].Split('-');
 
-                        for (var k = 0; k < pickingSecondRunway.Length; k++)
+                        for (var t = 0 ; t < pickingSecondRunway.Length; t++)
                         {
-
-                            for (var l = 0; l < pickingSecondRunway[k].Split(':').Length; l++)
+                            if (pickingSecondRunway[t].Replace(" ", string.Empty) == "x")
+                                continue;
+                                
+                            for (var l = 0; l < pickingSecondRunway[t].Split(':').Length; l++)
                             {
-                                _currentAirport.Runways[runways[i]].AddTimeDependecy(runways[i], 
-                                    (convertIndexToTypeOfAircraft(i), convertIndexToTypeOfAircraft(j)), 
-                                    pickingSecondRunway[k][l]);
+                                _currentAirport.Runways[runways[i]].AddTimeDependecy(runways[j], 
+                                    (ConvertIndexToTypeOfAircraft(t), ConvertIndexToTypeOfAircraft(l)), 
+                                    int.Parse(pickingSecondRunway[t].Split(':')[l]));
                             }
                         }
                     }
@@ -245,7 +247,7 @@ namespace AirScheduling
         /// <param name="index"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private static string convertIndexToTypeOfAircraft(int index)
+        private static string ConvertIndexToTypeOfAircraft(int index)
         {
             if (index == 0)
                 return "Heavy";
