@@ -6,7 +6,7 @@ namespace AirScheduling.Aviation
 {
     public class Airport
     {
-        private readonly Dictionary<string, Runway> _runways;
+        public Dictionary<string, Runway> Runways { get; }
 
         /// <summary>
         /// Default constructor
@@ -14,7 +14,7 @@ namespace AirScheduling.Aviation
         /// <param name="runways">Dictionary of all the runways</param>
         public Airport(Dictionary<string, Runway> runways)
         {
-            _runways = runways;
+            Runways = runways;
         }
         
         /// <summary>
@@ -24,7 +24,11 @@ namespace AirScheduling.Aviation
         {
             private string _identication;
             private Dictionary<string, bool> _permissions;
-            private Dictionary<(string, string), Dictionary<(string, string), int>> _timeDependency;
+            
+            /// <summary>
+            /// Dictionary of (runway, runway) (aircraf's type, aircraft's  type) (int)
+            /// </summary>
+            private Dictionary<string, Dictionary<(string, string), int>> _timeDependency;
 
             /// <summary>
             /// Default constructor
@@ -41,20 +45,21 @@ namespace AirScheduling.Aviation
                     {"Medium", permissions.Contains("Medium")},
                     {"Light", permissions.Contains("Light")}
                 };
+                _timeDependency = new Dictionary<string, Dictionary<(string, string), int>>();
             }
 
             /// <summary>
             /// Function to add the dependencies of runways
             /// </summary>
-            /// <param name="runways"></param>
-            /// <param name="timeDependency">A dictionary where keys are (runw1, runw1) and values are dictionaries are
-            /// (typeOfAircraft, typeOfAircraft) and values doubles</param>
-            private void AddTimeDependecy((string, string) runways, Dictionary<(string, string), int> timeDependency)
+            /// <param name="runway"></param>
+            /// <param name="pairTypeAircraft"></param>
+            /// <param name="timeDependency">Integer representing time between landings</param>
+            public void AddTimeDependecy(string runway, (string, string) pairTypeAircraft, int timeDependency)
             {
-                if (!_timeDependency.ContainsKey(runways))
+                if (_timeDependency[runway].ContainsKey(pairTypeAircraft))
                     throw new InvalidOperationException();
                 
-                _timeDependency.Add(runways, timeDependency);
+                _timeDependency[runway].Add(pairTypeAircraft, timeDependency);
             }
             
         }   

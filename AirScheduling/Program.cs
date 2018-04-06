@@ -65,9 +65,32 @@ namespace AirScheduling
                 if (allRunways != null)
                     _currentAirport = new Airport(allRunways);
                 
-                var timeInterf = read_runway_time_interference("../../Data/Airport" + Airport + "/Runway_times.csv");
+                var (runways, timeInterf) = read_runway_time_interference("../../Data/Airport" + Airport + "/Runway_times.csv");
                 
                 
+                if (runways.Length != timeInterf.Count())
+                    throw new Exception("Runway time interference matrix != Runway matrix");
+
+                for (var i = 0; i < timeInterf.Count; i++)
+                {
+                    var pickedFirstRunway = timeInterf[i];
+                    
+                    for (var j = 0; j < pickedFirstRunway.Count; j++)
+                    {
+                        var pickingSecondRunway = pickedFirstRunway[j].Split('-');
+
+                        for (var k = 0; k < pickingSecondRunway.Length; k++)
+                        {
+
+                            for (var l = 0; l < pickingSecondRunway[k].Split(':').Length; l++)
+                            {
+                                _currentAirport.Runways[runways[i]].AddTimeDependecy(runways[i], 
+                                    (convertIndexToTypeOfAircraft(i), convertIndexToTypeOfAircraft(j)), 
+                                    pickingSecondRunway[k][l]);
+                            }
+                        }
+                    }
+                }
                 
             }
             catch (Exception e)
@@ -191,25 +214,47 @@ namespace AirScheduling
         /// </summary>
         /// <param name="fileUrl">Url for the file to be read</param>
         /// <returns>A list of list of string</returns>
-        private static List<List<string>> read_runway_time_interference(string fileUrl)
+        private static (string[], List<List<string>>) read_runway_time_interference(string fileUrl)
         {
             var interferences = new List<List<string>>();
             
             var lines = File.ReadAllLines(fileUrl).ToArray();
-            string[] runways;
+            string[] runways = null;
             
             for(var i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
-                
-                if (i == 0)
-                    runways = line.Split()
-                var runwayInterference = line.Replace("[", string.Empty).Replace("]", string.Empty).Split(',').ToList();
 
-                interferences.Add(runwayInterference);
+                if (i == 0)
+                    runways = line.Replace(" ", string.Empty).Split(',');
+                else
+                {
+                    var runwayInterference =
+                        line.Replace("[", string.Empty).Replace("]", string.Empty).Split(',').ToList();
+
+                    interferences.Add(runwayInterference);
+                }
             }
 
-            return interferences;
+            return (runways, interferences);
+        }
+
+        /// <summary>
+        /// Convertes an index of a matrix to a specific type of aircraft
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private static string convertIndexToTypeOfAircraft(int index)
+        {
+            if (index == 0)
+                return "Heavy";
+            else if (index == 1)
+                return "Medium";
+            else if (index == 2)
+                return "Light";
+            else
+                throw new Exception();
         }
         
         
