@@ -19,8 +19,6 @@ namespace AirScheduling
     {
         private const string Airport = "1";
         private static List<Aircraft> _aircraftModels = new List<Aircraft>();
-        private static ConcurrentDictionary<string, AircraftRadar>  _aircraftRadars = 
-            new ConcurrentDictionary<string, AircraftRadar>();
         private static Thread radar;
 
         private static Airport _currentAirport;
@@ -162,13 +160,13 @@ namespace AirScheduling
                         var timeNextFlight = double.Parse(splittedLine[3]);
                         var prec = splittedLine[4];
 
-                        if (AirScheduling._aircraftRadars.ContainsKey(flighId))
+                        if (_currentAirport.AircraftRadars.ContainsKey(flighId))
                             continue;
 
                         var aicraftInRadar = new AircraftRadar(flighId, AirScheduling._aircraftModels[aircrafId - 1],
                             timeNextFlight, urgency);
 
-                        _aircraftRadars.TryAdd(flighId, aicraftInRadar);
+                        _currentAirport.AircraftRadars.TryAdd(flighId, aicraftInRadar);
                     }
                 }
                 catch (Exception e)

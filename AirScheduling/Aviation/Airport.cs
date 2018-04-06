@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,6 +8,7 @@ namespace AirScheduling.Aviation
     public class Airport
     {
         public Dictionary<string, Runway> Runways { get; }
+        public ConcurrentDictionary<string, AircraftRadar> AircraftRadars { get; }
 
         /// <summary>
         /// Default constructor
@@ -15,6 +17,7 @@ namespace AirScheduling.Aviation
         public Airport(Dictionary<string, Runway> runways)
         {
             Runways = runways;
+            AircraftRadars = new ConcurrentDictionary<string, AircraftRadar>();;
         }
         
         /// <summary>
