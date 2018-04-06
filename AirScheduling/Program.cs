@@ -160,13 +160,13 @@ namespace AirScheduling
                         var timeNextFlight = double.Parse(splittedLine[3]);
                         var prec = splittedLine[4];
 
-                        if (_currentAirport.AircraftRadars.ContainsKey(flighId))
+                        if (_currentAirport.Radar.ContainsKey(flighId))
                             continue;
 
                         var aicraftInRadar = new AircraftRadar(flighId, AirScheduling._aircraftModels[aircrafId - 1],
                             timeNextFlight, urgency);
 
-                        _currentAirport.AircraftRadars.TryAdd(flighId, aicraftInRadar);
+                        _currentAirport.Radar.TryAdd(flighId, aicraftInRadar);
                     }
                 }
                 catch (Exception e)

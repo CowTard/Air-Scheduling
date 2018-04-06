@@ -1,13 +1,19 @@
-﻿using GeneticSharp.Domain.Chromosomes;
+﻿using System.Collections;
+using System.Collections.Concurrent;
+using AirScheduling.Aviation;
+using GeneticSharp.Domain.Chromosomes;
 
 namespace AirScheduling.Genetics
 {
     public class Chromosome: ChromosomeBase
     {
-        public Chromosome(int length) : base(length)
+        private Airport _airport;
+        
+        public Chromosome(Airport airport) : base(airport.Radar.Count)
         {
+            _airport = airport;
         }
-
+        
         public override GeneticSharp.Domain.Chromosomes.Gene GenerateGene(int geneIndex)
         {
             throw new System.NotImplementedException();
@@ -15,7 +21,7 @@ namespace AirScheduling.Genetics
 
         public override IChromosome CreateNew()
         {
-            return new Chromosome(10);
+            throw new System.NotImplementedException();
         }
     }
 }
