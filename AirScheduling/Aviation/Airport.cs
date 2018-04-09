@@ -29,13 +29,26 @@ namespace AirScheduling.Aviation
             var rand = new Random();
             return Runways.ElementAt(rand.Next(Runways.Count)).Value;
         }
+
+        /// <summary>
+        /// Used to convert index into runways
+        /// </summary>
+        /// <param name="index">Index [0.. No of runways]</param>
+        /// <returns></returns>
+        public string ConvertIndexInRunwayIdentification(int index)
+        {
+            if (index > Runways.Count)
+                throw new ArgumentOutOfRangeException();
+
+            return Runways.Values.ElementAt(index).GetIdentification();
+        }
         
         /// <summary>
         /// A Class that holds identification of a runway as well as its abilty to accept types of aircrafts
         /// </summary>
         public class Runway
         {
-            private string _identication;
+            private readonly string _identication;
             private Dictionary<string, bool> _permissions;
             
             /// <summary>
@@ -76,6 +89,26 @@ namespace AirScheduling.Aviation
                     throw new InvalidOperationException();
                 
                 _timeDependency[runway].Add(pairTypeAircraft, timeDependency);
+            }
+
+            /// <summary>
+            /// Function to retrieve time dependency between a runway and two types of aircrafts
+            /// </summary>
+            /// <param name="runway">Runway to be used</param>
+            /// <param name="pairTypeAircraft"></param>
+            /// <returns></returns>
+            public double GetTimeDependency(string runway, (string, string) pairTypeAircraft)
+            {
+                return _timeDependency[runway][pairTypeAircraft];
+            }
+
+            /// <summary>
+            /// Returns the identification of the runway
+            /// </summary>
+            /// <returns></returns>
+            public string GetIdentification()
+            {
+                return this._identication;
             }
             
         }

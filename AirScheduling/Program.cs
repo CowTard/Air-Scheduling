@@ -35,7 +35,7 @@ namespace AirScheduling
             var mutation = new ReverseSequenceMutation();
             var fitness = new Genetics.Fitness();
             var chromosome = new Genetics.Chromosome(_currentAirport);
-            var population = new Population (50, 70, chromosome);
+            var population = new Population (4, 4, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation);
             ga.Termination = new GenerationNumberTermination(100);
@@ -78,10 +78,7 @@ namespace AirScheduling
                         var pickingSecondRunway = pickedFirstRunway[j].Split('-');
 
                         for (var t = 0 ; t < pickingSecondRunway.Length; t++)
-                        {
-                            if (pickingSecondRunway[t].Replace(" ", string.Empty) == "x")
-                                continue;
-                                
+                        {       
                             for (var l = 0; l < pickingSecondRunway[t].Split(':').Length; l++)
                             {
                                 _currentAirport.Runways[runways[i]].AddTimeDependecy(runways[j], 

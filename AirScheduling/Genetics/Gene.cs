@@ -10,7 +10,7 @@ namespace AirScheduling.Genetics
     {
         private Aircraft _aircraft;
         private TimeSpan _estimatedLandingTime;
-        private Airport.Runway _runway;
+        private readonly Airport.Runway _runway;
 
         public Gene(Aircraft aircraft, Airport.Runway runway, TimeSpan estimatedLandingTime)
         {
@@ -18,7 +18,15 @@ namespace AirScheduling.Genetics
             _aircraft = aircraft;
             _runway = runway;
         }
-        
+
+        /// <summary>
+        /// Returns the runway's object designated to the current gene
+        /// </summary>
+        /// <returns>Runway's object</returns>
+        public Airport.Runway GetRunway()
+        {
+            return this._runway;
+        }
         
     }
 }

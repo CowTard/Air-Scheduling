@@ -47,6 +47,15 @@ namespace AirScheduling.Genetics
         }
 
         /// <summary>
+        /// Allows the use of the airport object to outer classes
+        /// </summary>
+        /// <returns></returns>
+        public Airport GetAirport()
+        {
+            return this._airport;
+        }
+
+        /// <summary>
         /// Creates a new chromossome with same aircrafts but with different runway attribution
         /// </summary>
         /// <returns>New Chromosome</returns>
