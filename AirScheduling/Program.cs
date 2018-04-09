@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using AirScheduling.Aviation;
+using AirScheduling.Genetics;
 using GeneticSharp.Domain;
 using GeneticSharp.Domain.Crossovers;
 using GeneticSharp.Domain.Mutations;
@@ -35,12 +36,34 @@ namespace AirScheduling
             var mutation = new ReverseSequenceMutation();
             var fitness = new Genetics.Fitness();
             var chromosome = new Genetics.Chromosome(_currentAirport);
-            var population = new Population (4, 4, chromosome);
+            var population = new Population (50, 70, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation);
-            ga.Termination = new GenerationNumberTermination(100);
+            ga.Termination = new GenerationNumberTermination(1000000);
 
             Console.WriteLine("GA running...");
+            var latestFitness = 0.0;
+            ga.GenerationRan += (sender, e) =>
+            {
+                var bestChromosome = ga.BestChromosome as Chromosome;
+                var bestFitness = bestChromosome.Fitness.Value;
+
+                if (bestFitness != latestFitness)
+                {
+                    latestFitness = bestFitness;
+
+                    Console.WriteLine(
+                        "Generation {0,2}: {1}",
+                        ga.GenerationsNumber,
+                        bestFitness
+                    );
+                }
+                else
+                {
+                    Console.WriteLine("Generation {0}: Did not find a better solution", 
+                        ga.GenerationsNumber);
+                }
+            };
             ga.Start();
 
             Console.WriteLine("Best solution found has {0} fitness.", ga.BestChromosome.Fitness);

@@ -9,10 +9,10 @@ namespace AirScheduling.Genetics
     public class Gene
     {
         private Aircraft _aircraft;
-        private TimeSpan _estimatedLandingTime;
+        private double _estimatedLandingTime;
         private readonly Airport.Runway _runway;
 
-        public Gene(Aircraft aircraft, Airport.Runway runway, TimeSpan estimatedLandingTime)
+        public Gene(Aircraft aircraft, Airport.Runway runway, double estimatedLandingTime)
         {
             _estimatedLandingTime = estimatedLandingTime;
             _aircraft = aircraft;
@@ -26,6 +26,24 @@ namespace AirScheduling.Genetics
         public Airport.Runway GetRunway()
         {
             return this._runway;
+        }
+
+        /// <summary>
+        /// Adds time seconds into TimeSpan.Zero
+        /// </summary>
+        /// <param name="time"></param>
+        public void SetArrivalTime(double time)
+        {
+            _estimatedLandingTime = time;
+        }
+
+        /// <summary>
+        /// Returns estimated landing time in seconds
+        /// </summary>
+        /// <returns></returns>
+        public double GetArrivalTime()
+        {
+            return _estimatedLandingTime;
         }
         
     }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using GeneticSharp.Domain.Chromosomes;
+﻿using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
 
 namespace AirScheduling.Genetics
@@ -14,7 +12,7 @@ namespace AirScheduling.Genetics
             _chromosome = (Chromosome)chromosome;
             CalculateArrivalTime();
 
-            return 0;
+            return ((Gene)_chromosome.GetGene(_chromosome.Length-1).Value).GetArrivalTime();
         }
         
         /// <summary>
@@ -26,21 +24,34 @@ namespace AirScheduling.Genetics
             var arrayOfArrivals = new double[_chromosome.GetAirport().Runways.Count];
             for (var i = 0; i < arrayOfArrivals.Length; i++)
                 arrayOfArrivals[i] = 0;
-            
-            
+
+
+            var lastRunway = string.Empty;
             for (var i = 0; i < _chromosome.Length; i++)
             {
                 var currentGene = _chromosome.GetGene(i);
-                
-                var runwayToLand = ((Gene) currentGene.Value).GetRunway();
 
-                // Updating values from array of arrivals
-                for (var j = 0; j < arrayOfArrivals.Length; j++)
+                if (lastRunway == string.Empty)
                 {
-                    var runwayToCompare = _chromosome.GetAirport().ConvertIndexInRunwayIdentification(j);
-                    arrayOfArrivals[j] += runwayToLand.GetTimeDependency(runwayToCompare, ("Heavy", "Heavy"));
+                    lastRunway = ((Gene) currentGene.Value).GetRunway().GetIdentification();
+                }
+                else
+                {
+                    var runwayToLand = ((Gene) currentGene.Value).GetRunway();
+                    var timeToAdd = runwayToLand.GetTimeDependency(lastRunway, ("Heavy", "Heavy"));
+
+                    // Updating values from array of arrivals
+                    for (var j = 0; j < arrayOfArrivals.Length; j++)
+                    {
+                        arrayOfArrivals[j] += timeToAdd;
+                    }
+
+                    var runwayIndex = _chromosome.GetAirport().ConvertRunwayInIndex(runwayToLand.GetIdentification());
+                    ((Gene)_chromosome.GetGene(i).Value).SetArrivalTime(arrayOfArrivals[runwayIndex]);
                 }
             }
+            
+            
         }
     }
 }

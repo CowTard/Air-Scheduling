@@ -33,14 +33,14 @@ namespace AirScheduling.Aviation
         /// <summary>
         /// Used to convert index into runways
         /// </summary>
-        /// <param name="index">Index [0.. No of runways]</param>
+        /// <param name="runway"></param>
         /// <returns></returns>
-        public string ConvertIndexInRunwayIdentification(int index)
+        public int ConvertRunwayInIndex(string runway)
         {
-            if (index > Runways.Count)
+            if (!Runways.ContainsKey(runway))
                 throw new ArgumentOutOfRangeException();
 
-            return Runways.Values.ElementAt(index).GetIdentification();
+            return Runways.ToList().IndexOf(new KeyValuePair<string, Runway>(runway, Runways[runway]));
         }
         
         /// <summary>

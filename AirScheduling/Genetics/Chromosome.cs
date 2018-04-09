@@ -41,7 +41,7 @@ namespace AirScheduling.Genetics
         {
             
             var geneInformation = new Gene(_airport.Radar[_airport.Radar.Keys.ElementAt(geneIndex)].GetAircraft(),
-                _airport.GetRandomRunway(), TimeSpan.Zero);
+                _airport.GetRandomRunway(), -1);
             
             return new GeneticSharp.Domain.Chromosomes.Gene(geneInformation);
         }
