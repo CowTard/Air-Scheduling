@@ -26,15 +26,15 @@ namespace AirScheduling
         public static void Main(string[] args)
         {
             read_configuration_files();
-            radar.Start();
+
+            while (_currentAirport.Radar.IsEmpty)
+            {}
             
-            
-            /*
             var selection = new EliteSelection();
             var crossover = new OrderedCrossover();
             var mutation = new ReverseSequenceMutation();
             var fitness = new Genetics.Fitness();
-            var chromosome = new Genetics.Chromosome(10);
+            var chromosome = new Genetics.Chromosome(_currentAirport);
             var population = new Population (50, 70, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation);
@@ -44,7 +44,7 @@ namespace AirScheduling
             ga.Start();
 
             Console.WriteLine("Best solution found has {0} fitness.", ga.BestChromosome.Fitness);
-            */
+            
         }
 
         /// <summary>
@@ -91,6 +91,8 @@ namespace AirScheduling
                         }
                     }
                 }
+                
+                radar.Start();
                 
             }
             catch (Exception e)

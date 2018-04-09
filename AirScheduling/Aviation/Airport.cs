@@ -19,6 +19,16 @@ namespace AirScheduling.Aviation
             Runways = runways;
             Radar = new ConcurrentDictionary<string, AircraftRadar>();;
         }
+
+        /// <summary>
+        /// Returns a random runway that is present in the airport
+        /// </summary>
+        /// <returns>Available runway</returns>
+        public Runway GetRandomRunway()
+        {
+            var rand = new Random();
+            return Runways.ElementAt(rand.Next(Runways.Count)).Value;
+        }
         
         /// <summary>
         /// A Class that holds identification of a runway as well as its abilty to accept types of aircrafts
@@ -68,6 +78,6 @@ namespace AirScheduling.Aviation
                 _timeDependency[runway].Add(pairTypeAircraft, timeDependency);
             }
             
-        }   
+        }
     }
 }

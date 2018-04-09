@@ -80,5 +80,14 @@ namespace AirScheduling.Aviation
             _emergency = emergency;
             _flightId = flightId;
         }
+        
+        /// <summary>
+        /// Returns the aircraf
+        /// </summary>
+        /// <returns>Aircraft</returns>
+        public Aircraft GetAircraft()
+        {
+            return this._aircraft;
+        }
     }
 }
