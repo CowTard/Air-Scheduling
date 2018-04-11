@@ -10,7 +10,7 @@ namespace AirScheduling.Genetics
         public double Evaluate(IChromosome chromosome)
         {
             _chromosome = (Chromosome)chromosome;
-            CalculateArrivalTime();
+            CalculateArrivalTimeAndCostAsssociated();
 
             return ((Gene)_chromosome.GetGene(_chromosome.Length-1).Value).GetArrivalTime();
         }
@@ -18,7 +18,7 @@ namespace AirScheduling.Genetics
         /// <summary>
         /// Calculates arrival time for each aircraft
         /// </summary>
-        private void CalculateArrivalTime()
+        private void CalculateArrivalTimeAndCostAsssociated()
         {
             // Initialize array of times
             var arrayOfArrivals = new double[_chromosome.GetAirport().Runways.Count];
@@ -50,8 +50,6 @@ namespace AirScheduling.Genetics
                     ((Gene)_chromosome.GetGene(i).Value).SetArrivalTime(arrayOfArrivals[runwayIndex]);
                 }
             }
-            
-            
         }
     }
 }

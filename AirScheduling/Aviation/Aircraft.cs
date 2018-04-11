@@ -19,8 +19,10 @@ namespace AirScheduling.Aviation
     {
         private string _model;
         private AircraftType _aircraftType;
-        private double _maxSpeed, _optimalSpeed, _minSpeed;
-        
+        public double MaxSpeed { get; }
+        public double OptimalSpeed { get; }
+        public double MinSpeed { get; }
+
         /// <summary>
         /// Constructor of the class Aircraft
         /// </summary>
@@ -33,9 +35,9 @@ namespace AirScheduling.Aviation
         {
             _aircraftType = aircraftType;
             _model = model;
-            _maxSpeed = maxSpeed;
-            _optimalSpeed = optimalSpeed;
-            _minSpeed = minSpeed;
+            MaxSpeed = maxSpeed;
+            OptimalSpeed = optimalSpeed;
+            MinSpeed = minSpeed;
         }
         
         /// <summary>
@@ -62,20 +64,23 @@ namespace AirScheduling.Aviation
     public class AircraftRadar
     {
         private string _flightId;
-        private Aircraft _aircraft;
+        private readonly double _distance;
+        private readonly Aircraft _aircraft;
         private double _timeOfNextFlight;
-        private bool _emergency;
+        private readonly bool _emergency;
 
         /// <summary>
         /// Constructor of the class
         /// </summary>
         /// <param name="flightId">Flight Identification</param>
+        /// <param name="distanceToAirport">Distance that separates the aircraft and the airport</param>
         /// <param name="aircraft">Object of the class <see cref="Aircraft"/></param>
         /// <param name="timeOfNextFlight">Time left in minutes for the next flight of this aircraft</param>
         /// <param name="emergency">Whether aircraft is in emergengy mode or not </param>
-        public AircraftRadar(string flightId, Aircraft aircraft, double timeOfNextFlight, bool emergency)
+        public AircraftRadar(string flightId, string distanceToAirport, Aircraft aircraft, double timeOfNextFlight, bool emergency)
         {
             _aircraft = aircraft;
+            double.TryParse(distanceToAirport, out _distance);
             _timeOfNextFlight = timeOfNextFlight;
             _emergency = emergency;
             _flightId = flightId;
@@ -88,6 +93,22 @@ namespace AirScheduling.Aviation
         public Aircraft GetAircraft()
         {
             return this._aircraft;
+        }
+
+        /// <summary>
+        /// Returns the distance between airport and aircraft
+        /// </summary>
+        public double GetDistanceToAirport()
+        {
+            return this._distance;
+        }
+
+        /// <summary>
+        /// Returns the state of emergency of the present aircraft in state of integer
+        /// </summary>
+        public int GetEmergencyState()
+        {
+            return _emergency ? 1 : 0;
         }
     }
 }

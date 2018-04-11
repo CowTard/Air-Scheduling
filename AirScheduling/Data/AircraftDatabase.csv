@@ -1,4 +1,4 @@
-Id, Model, Type, Minimum speed, Optimal Speed, Maximum speed
+Id, Model, Type, Minimum speed, Optimal Speed, Maximum speed // speed in meters.second
 1, X, Heavy, 100, 200, 300
 2, Y, Light, 30, 70, 150
 3, Z, Medium, 50, 90, 200

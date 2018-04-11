@@ -38,8 +38,10 @@ namespace AirScheduling
             var chromosome = new Genetics.Chromosome(_currentAirport);
             var population = new Population (50, 70, chromosome);
 
-            var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation);
-            ga.Termination = new GenerationNumberTermination(1000000);
+            var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
+            {
+                Termination = new GenerationNumberTermination(100)
+            };
 
             Console.WriteLine("GA running...");
             var latestFitness = 0.0;
@@ -177,15 +179,16 @@ namespace AirScheduling
                         var splittedLine = line.Split(',');
 
                         var flighId = splittedLine[0];
-                        var aircrafId = int.Parse(splittedLine[1]);
-                        var urgency = bool.Parse(splittedLine[2]);
-                        var timeNextFlight = double.Parse(splittedLine[3]);
-                        var prec = splittedLine[4];
+                        var distanceToAirport = splittedLine[1];
+                        var aircrafId = int.Parse(splittedLine[2]);
+                        var urgency = bool.Parse(splittedLine[3]);
+                        var timeNextFlight = double.Parse(splittedLine[4]);
+                        var prec = splittedLine[5];
 
                         if (_currentAirport.Radar.ContainsKey(flighId))
                             continue;
 
-                        var aicraftInRadar = new AircraftRadar(flighId, AirScheduling._aircraftModels[aircrafId - 1],
+                        var aicraftInRadar = new AircraftRadar(flighId, distanceToAirport, AirScheduling._aircraftModels[aircrafId - 1],
                             timeNextFlight, urgency);
 
                         _currentAirport.Radar.TryAdd(flighId, aicraftInRadar);

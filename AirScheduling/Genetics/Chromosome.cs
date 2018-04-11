@@ -40,7 +40,7 @@ namespace AirScheduling.Genetics
         public override GeneticSharp.Domain.Chromosomes.Gene GenerateGene(int geneIndex)
         {
             
-            var geneInformation = new Gene(_airport.Radar[_airport.Radar.Keys.ElementAt(geneIndex)].GetAircraft(),
+            var geneInformation = new Gene(_airport.Radar[_airport.Radar.Keys.ElementAt(geneIndex)],
                 _airport.GetRandomRunway(), -1);
             
             return new GeneticSharp.Domain.Chromosomes.Gene(geneInformation);
