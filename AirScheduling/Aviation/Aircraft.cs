@@ -31,7 +31,7 @@ namespace AirScheduling.Aviation
         /// <param name="maxSpeed">Max speed of this model in Knots</param>
         /// <param name="optimalSpeed">The Stall speed of this model in knots</param>
         /// <param name="minSpeed">The minimum speed of this model in knots</param>
-        public Aircraft(AircraftType aircraftType, string model, double maxSpeed, double optimalSpeed, double minSpeed)
+        public Aircraft(AircraftType aircraftType, string model, double minSpeed, double optimalSpeed, double maxSpeed)
         {
             _aircraftType = aircraftType;
             _model = model;

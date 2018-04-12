@@ -1,4 +1,6 @@
-﻿using GeneticSharp.Domain.Chromosomes;
+﻿using System;
+using System.Linq;
+using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
 
 namespace AirScheduling.Genetics
@@ -12,7 +14,9 @@ namespace AirScheduling.Genetics
             _chromosome = (Chromosome)chromosome;
             CalculateArrivalTimeAndCostAsssociated();
 
-            return ((Gene)_chromosome.GetGene(_chromosome.Length-1).Value).GetArrivalTime();
+            var cost = _chromosome.GetGenes().Sum(ge => ((Gene) ge.Value).Cost);
+
+            return cost;
         }
         
         /// <summary>
@@ -27,17 +31,25 @@ namespace AirScheduling.Genetics
 
 
             var lastRunway = string.Empty;
+            var timeOfFirstLanding = 0.0; // ETA for the first landing in seconds
+            
             for (var i = 0; i < _chromosome.Length; i++)
             {
-                var currentGene = _chromosome.GetGene(i);
+                var currentGene = (Gene)_chromosome.GetGene(i).Value;
 
                 if (lastRunway == string.Empty)
                 {
-                    lastRunway = ((Gene) currentGene.Value).GetRunway().GetIdentification();
+                    lastRunway = currentGene.GetRunway().GetIdentification();
+                    
+                    var distanceToCover = currentGene.GetRadarAircraft().GetDistanceToAirport();
+                    // TODO: Should this speed be in mutations ?
+                    var useSpeed = currentGene.GetRadarAircraft().GetAircraft().OptimalSpeed;
+
+                    timeOfFirstLanding = distanceToCover / useSpeed;
                 }
                 else
                 {
-                    var runwayToLand = ((Gene) currentGene.Value).GetRunway();
+                    var runwayToLand = currentGene.GetRunway();
                     var timeToAdd = runwayToLand.GetTimeDependency(lastRunway, ("Heavy", "Heavy"));
 
                     // Updating values from array of arrivals
@@ -47,7 +59,10 @@ namespace AirScheduling.Genetics
                     }
 
                     var runwayIndex = _chromosome.GetAirport().ConvertRunwayInIndex(runwayToLand.GetIdentification());
-                    ((Gene)_chromosome.GetGene(i).Value).SetArrivalTime(arrayOfArrivals[runwayIndex]);
+
+                    ((Gene)_chromosome.GetGene(i).Value).SetArrivalTime(timeOfFirstLanding + arrayOfArrivals[runwayIndex]);
+
+                    timeOfFirstLanding += timeOfFirstLanding + arrayOfArrivals[runwayIndex];
                 }
             }
         }

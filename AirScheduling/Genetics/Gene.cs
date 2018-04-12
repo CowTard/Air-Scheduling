@@ -29,7 +29,7 @@ namespace AirScheduling.Genetics
         /// <returns>Runway's object</returns>
         public Airport.Runway GetRunway()
         {
-            return this._runway;
+            return _runway;
         }
 
         /// <summary>
@@ -40,33 +40,12 @@ namespace AirScheduling.Genetics
         {
             _estimatedLandingTime = time;
             
-            // Time it would take if aircraft would be approaching in optimal speed
+            // Time it would take if aircraft would be approaching in differet speed
             var optTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().OptimalSpeed;
-
-            if ( (0.9 * _estimatedLandingTime < optTime) && (1.1 * _estimatedLandingTime >= optTime) )
-            {
-                Cost = 0;
-                return;
-            }
+            var slowTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MinSpeed;
+            var fastTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MaxSpeed;
             
-            // Time it would take if aircraft would be as fast as possible
-            var fasTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MaxSpeed;
             
-            if (_estimatedLandingTime < fasTime)
-            {
-                Cost = double.MaxValue;
-                return;
-            }
-            else
-            {
-                Cost = Math.Pow((_estimatedLandingTime - fasTime), _aircraft.GetEmergencyState() + 2);
-                return;
-            }
-            
-            // Since fuel it is not being used
-            
-            Cost = Math.Pow((_estimatedLandingTime - fasTime), _aircraft.GetEmergencyState() + 1);
-            return;
         }
 
         /// <summary>
@@ -82,7 +61,7 @@ namespace AirScheduling.Genetics
         /// Returns the aircraft object
         /// </summary>
         /// <returns></returns>
-        public AircraftRadar GetAircraft()
+        public AircraftRadar GetRadarAircraft()
         {
             return _aircraft;
         }
