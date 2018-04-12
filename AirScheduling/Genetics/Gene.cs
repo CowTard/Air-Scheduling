@@ -46,6 +46,31 @@ namespace AirScheduling.Genetics
             var fastTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MaxSpeed;
             
             
+            // Optimal Interval
+            if (optTime * 0.9 >= _estimatedLandingTime && _estimatedLandingTime <= optTime * 1.1)
+                Cost = 0;
+
+            // Impossible Interval
+            if (_estimatedLandingTime < fastTime)
+            {
+                Cost = double.MaxValue;
+                return;
+            }
+            
+            // Between fastest and optimal
+            if (_estimatedLandingTime >= fastTime && _estimatedLandingTime < optTime)
+            {
+                Cost = Math.Pow((optTime - _estimatedLandingTime), _aircraft.GetEmergencyState() + 2);
+                return;
+            }
+            
+            // Between opt and slowest
+            if (_estimatedLandingTime > optTime)
+            {
+                Cost = Math.Pow(1/(1+ Math.Exp(-(_estimatedLandingTime - optTime))), _aircraft.GetEmergencyState() + 1);
+            }
+
+            return;
         }
 
         /// <summary>
