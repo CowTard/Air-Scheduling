@@ -68,6 +68,7 @@ namespace AirScheduling.Genetics
             if (_estimatedLandingTime > optTime)
             {
                 Cost = Math.Pow(1/(1+ Math.Exp(-(_estimatedLandingTime - optTime))), _aircraft.GetEmergencyState() + 1);
+                return;
             }
 
             return;

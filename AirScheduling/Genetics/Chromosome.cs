@@ -63,5 +63,24 @@ namespace AirScheduling.Genetics
         {
             return new Chromosome(_airport);
         }
+
+        /// <summary>
+        /// Shows list of aircrafts and their schedule timer
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var text = "";
+
+            foreach (var gene in GetGenes())
+            {
+                var castedGene = (Gene) gene.Value;
+
+                text += castedGene.GetRadarAircraft() + " " + castedGene.GetRunway() + " " + 
+                        castedGene.GetArrivalTime() + Environment.NewLine;
+            }
+
+            return text;
+        }
     }
 }

@@ -110,7 +110,16 @@ namespace AirScheduling.Aviation
             {
                 return this._identication;
             }
+
             
+            /// <summary>
+            /// Override of the function ToString()
+            /// </summary>
+            /// <returns>The identification of the runway</returns>
+            public override string ToString()
+            {
+                return GetIdentification();
+            }
         }
     }
 }

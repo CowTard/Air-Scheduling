@@ -110,5 +110,11 @@ namespace AirScheduling.Aviation
         {
             return _emergency ? 1 : 0;
         }
+
+
+        public override string ToString()
+        {
+            return _flightId + " " + _emergency;
+        }
     }
 }

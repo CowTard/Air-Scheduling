@@ -68,7 +68,7 @@ namespace AirScheduling
             };
             ga.Start();
 
-            Console.WriteLine("Best solution found has {0} fitness.", ga.BestChromosome.Fitness);
+            Console.WriteLine("Best solution found is: " + Environment.NewLine + "{0} ", ga.BestChromosome);
             
         }
 
