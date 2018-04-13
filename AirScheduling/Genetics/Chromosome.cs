@@ -78,6 +78,18 @@ namespace AirScheduling.Genetics
         }
 
         /// <summary>
+        /// Returns a slice of the the array of genes
+        /// </summary>
+        /// <param name="from">Initial index (will be included)</param>
+        /// <param name="to">Last index (will not be included in final list)</param>
+        /// <returns></returns>
+        public IList GetSliceOfChromosome(int from, int to)
+        {
+            return GetGenes().ToList().GetRange(from, to - from);
+        }
+        
+        
+        /// <summary>
         /// Shows list of aircrafts and their schedule timer
         /// </summary>
         /// <returns></returns>

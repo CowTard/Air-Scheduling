@@ -59,6 +59,7 @@
     <Compile Include="Aviation\Aircraft.cs" />
     <Compile Include="Aviation\Airport.cs" />
     <Compile Include="Genetics\Chromosome.cs" />
+    <Compile Include="Genetics\Crossover.cs" />
     <Compile Include="Genetics\Fitness.cs" />
     <Compile Include="Genetics\Gene.cs" />
     <Compile Include="Genetics\Mutation.cs" />
