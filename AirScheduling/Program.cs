@@ -33,16 +33,17 @@ namespace AirScheduling
             
             var selection = new EliteSelection();
             var crossover = new OrderedCrossover();
-            var mutation = new ReverseSequenceMutation();
+            var mutation = new Mutation();
             var fitness = new Genetics.Fitness();
             var chromosome = new Genetics.Chromosome(_currentAirport);
             var population = new Population (50, 70, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
+                MutationProbability = 0.1f,
                 Termination = new GenerationNumberTermination(100)
             };
-
+            
             Console.WriteLine("GA running...");
             var latestFitness = 0.0;
             ga.GenerationRan += (sender, e) =>

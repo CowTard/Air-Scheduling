@@ -65,6 +65,19 @@ namespace AirScheduling.Genetics
         }
 
         /// <summary>
+        /// Swap gene in from position with the gene in to position
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        public void SwapGenes(int from, int to)
+        {
+            var temp = GetGene(from);
+            
+            ReplaceGene(from, GetGene(to));
+            ReplaceGene(to, temp);
+        }
+
+        /// <summary>
         /// Shows list of aircrafts and their schedule timer
         /// </summary>
         /// <returns></returns>

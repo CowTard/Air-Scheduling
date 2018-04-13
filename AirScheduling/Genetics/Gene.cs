@@ -10,7 +10,7 @@ namespace AirScheduling.Genetics
     {
         private readonly AircraftRadar _aircraft;
         private double _estimatedLandingTime;
-        private readonly Airport.Runway _runway;
+        private Airport.Runway _runway;
 
         public double Cost;
 
@@ -81,6 +81,15 @@ namespace AirScheduling.Genetics
         public double GetArrivalTime()
         {
             return _estimatedLandingTime;
+        }
+
+        /// <summary>
+        /// Mutates the runways assigned to this gene
+        /// </summary>
+        /// <param name="runway"></param>
+        public void MutateRunway(Airport.Runway runway)
+        {
+            this._runway = runway;
         }
 
         /// <summary>
