@@ -56,6 +56,15 @@ namespace AirScheduling.Aviation
                 return AircraftType.Heavy;
 
         }
+        
+        /// <summary>
+        /// Gets the aircraft's type
+        /// </summary>
+        /// <returns></returns>
+        public AircraftType GetAircraftType()
+        {
+            return _aircraftType;
+        }
     }
     
     /// <summary>
@@ -63,10 +72,10 @@ namespace AirScheduling.Aviation
     /// </summary>
     public class AircraftRadar
     {
-        private string _flightId;
+        private readonly string _flightId;
         private readonly double _distance;
         private readonly Aircraft _aircraft;
-        private double _timeOfNextFlight;
+        private readonly double _timeOfNextFlight;
         private readonly bool _emergency;
 
         /// <summary>
@@ -75,7 +84,7 @@ namespace AirScheduling.Aviation
         /// <param name="flightId">Flight Identification</param>
         /// <param name="distanceToAirport">Distance that separates the aircraft and the airport</param>
         /// <param name="aircraft">Object of the class <see cref="Aircraft"/></param>
-        /// <param name="timeOfNextFlight">Time left in minutes for the next flight of this aircraft</param>
+        /// <param name="timeOfNextFlight">Time left in minutes for the next flight of this aircraft in minutes</param>
         /// <param name="emergency">Whether aircraft is in emergengy mode or not </param>
         public AircraftRadar(string flightId, string distanceToAirport, Aircraft aircraft, double timeOfNextFlight, bool emergency)
         {
@@ -118,6 +127,15 @@ namespace AirScheduling.Aviation
         public string GetFlightIdentification()
         {
             return _flightId;
+        }
+
+        /// <summary>
+        /// Returns in seconds the time left for the next flight
+        /// </summary>
+        /// <returns>A double representing the time in seconds</returns>
+        public double GetNextFlightTime()
+        {
+            return _timeOfNextFlight * 60;
         }
 
         /// <summary>

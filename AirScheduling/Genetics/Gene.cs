@@ -40,36 +40,7 @@ namespace AirScheduling.Genetics
         {
             _estimatedLandingTime = time;
             
-            // Time it would take if aircraft would be approaching in differet speed
-            var optTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().OptimalSpeed;
-            var slowTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MinSpeed;
-            var fastTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MaxSpeed;
-            
-            
-            // Optimal Interval
-            if (optTime * 0.9 >= _estimatedLandingTime && _estimatedLandingTime <= optTime * 1.1)
-                Cost = 0;
-
-            // Impossible Interval
-            if (_estimatedLandingTime < fastTime)
-            {
-                Cost = double.MaxValue;
-                return;
-            }
-            
-            // Between fastest and optimal
-            if (_estimatedLandingTime >= fastTime && _estimatedLandingTime < optTime)
-            {
-                Cost = Math.Pow((optTime - _estimatedLandingTime), _aircraft.GetEmergencyState() + 2);
-                return;
-            }
-            
-            // Between opt and slowest
-            if (_estimatedLandingTime > optTime)
-            {
-                Cost = Math.Pow(1/(1+ Math.Exp(-(_estimatedLandingTime - optTime))), _aircraft.GetEmergencyState() + 1);
-                return;
-            }
+            CalculateFitnessFunction();
 
             return;
         }
@@ -99,6 +70,83 @@ namespace AirScheduling.Genetics
         public AircraftRadar GetRadarAircraft()
         {
             return _aircraft;
+        }
+
+        
+        /// <summary>
+        /// Responsible for calculating all the parts of the fitness function
+        /// </summary>
+        private void CalculateFitnessFunction()
+        {
+            IncrementCost(CalculateArrivalFitness());
+            IncrementCost(CalculateTripArrivalFitness());
+            IncrementCost(CalculateRunwayFitness());
+        }
+        
+        /// <summary>
+        /// Calculates the value to be added to the cost function related to the aircraft's arrival time
+        /// </summary>
+        /// <returns>Cost to be added</returns>
+        private double CalculateArrivalFitness()
+        {
+            // Time it would take if aircraft would be approaching in differet speed
+            var optTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().OptimalSpeed;
+            var slowTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MinSpeed;
+            var fastTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MaxSpeed;
+            
+            
+            // Optimal Interval
+            if (optTime * 0.9 >= _estimatedLandingTime && _estimatedLandingTime <= optTime * 1.1)
+                return 0;
+
+            // Impossible Interval
+            if (_estimatedLandingTime < fastTime)
+                return double.MaxValue;
+            
+            // Between fastest and optimal
+            if (_estimatedLandingTime >= fastTime && _estimatedLandingTime < optTime)
+                return  Math.Pow((optTime - _estimatedLandingTime), _aircraft.GetEmergencyState() + 2);
+            
+            // Between opt and slowest
+            if (_estimatedLandingTime > optTime)
+                return Math.Pow(1/(1+ Math.Exp(-(_estimatedLandingTime - optTime))), _aircraft.GetEmergencyState() + 1);
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Calculates the value to be added to the cost function related to the next flight time
+        /// </summary>
+        /// <returns>Amount of cost to be added</returns>
+        private double CalculateTripArrivalFitness()
+        {
+            if (_estimatedLandingTime - _aircraft.GetNextFlightTime() > 30 * 60)
+                return 0;
+            else
+            {
+                var exceedingTimeInSeconds = (_aircraft.GetNextFlightTime() / 60 ) - (_estimatedLandingTime / 60) - (30 * 60);
+                return 1000 * Math.Pow(exceedingTimeInSeconds, 2);
+            }
+        }
+        
+        /// <summary>
+        /// Calculates the value to be added to the cost function related to the runway availability to receive this type of aircraft
+        /// </summary>
+        /// <returns>0, if possible : 10000 if it's not possible for this type of aircraft to land on this runway</returns>
+        private double CalculateRunwayFitness()
+        {
+            return _runway.PossibilityOfLanding(_aircraft.GetAircraft().GetAircraftType().ToString())
+                ? 0
+                : double.MaxValue;
+        }
+        
+        /// <summary>
+        /// Function that should be used to increment cost by n amount
+        /// </summary>
+        /// <param name="amount">Amount to be increment</param>
+        private void IncrementCost(double amount)
+        {
+            Cost += amount;
         }
 
         /// <summary>

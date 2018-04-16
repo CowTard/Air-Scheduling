@@ -111,6 +111,16 @@ namespace AirScheduling.Aviation
                 return this._identication;
             }
 
+            /// <summary>
+            /// Checks if either an aircraft can or cannot land on this runway
+            /// </summary>
+            /// <param name="typeOfAircraft">Type of the aircraft</param>
+            /// <returns>True if possible, false otherwise</returns>
+            public bool PossibilityOfLanding(string typeOfAircraft)
+            {
+                return _permissions[typeOfAircraft];
+            }
+
             
             /// <summary>
             /// Override of the function ToString()
@@ -120,6 +130,7 @@ namespace AirScheduling.Aviation
             {
                 return GetIdentification();
             }
+            
         }
     }
 }

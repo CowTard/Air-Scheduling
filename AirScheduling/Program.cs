@@ -189,7 +189,8 @@ namespace AirScheduling
                         if (_currentAirport.Radar.ContainsKey(flighId))
                             continue;
 
-                        var aicraftInRadar = new AircraftRadar(flighId, distanceToAirport, AirScheduling._aircraftModels[aircrafId - 1],
+                        var aicraftInRadar = new AircraftRadar(flighId, distanceToAirport,
+                            AirScheduling._aircraftModels[aircrafId - 1],
                             timeNextFlight, urgency);
 
                         _currentAirport.Radar.TryAdd(flighId, aicraftInRadar);
