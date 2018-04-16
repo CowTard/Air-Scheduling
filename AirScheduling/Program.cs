@@ -32,8 +32,8 @@ namespace AirScheduling
             {}
             
             var selection = new EliteSelection();
-            var crossover = new OrderedCrossover();
-            var mutation = new Mutation();
+            var crossover = new Genetics.Crossover();
+            var mutation = new Genetics.Mutation();
             var fitness = new Genetics.Fitness();
             var chromosome = new Genetics.Chromosome(_currentAirport);
             var population = new Population (50, 70, chromosome);

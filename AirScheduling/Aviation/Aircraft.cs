@@ -111,7 +111,19 @@ namespace AirScheduling.Aviation
             return _emergency ? 1 : 0;
         }
 
+        /// <summary>
+        /// Returns the flight identification of this flight
+        /// </summary>
+        /// <returns></returns>
+        public string GetFlightIdentification()
+        {
+            return _flightId;
+        }
 
+        /// <summary>
+        /// Returns a string composed by flightID and emergency status
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return _flightId + " " + _emergency;

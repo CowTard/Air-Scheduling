@@ -100,5 +100,21 @@ namespace AirScheduling.Genetics
         {
             return _aircraft;
         }
+
+        /// <summary>
+        /// Returns either two genes contain the same aircraft ID
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+            {
+                throw new NullReferenceException("Gene passed to compared is null.");
+            }
+            
+            var gene = ((Gene) obj);
+            return this._aircraft.GetFlightIdentification() == gene._aircraft.GetFlightIdentification();
+        }
     }
 }

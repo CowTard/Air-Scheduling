@@ -5,17 +5,25 @@ using GeneticSharp.Domain.Crossovers;
 
 namespace AirScheduling.Genetics
 {
-    public class Crossover : ICrossover
+    public class Crossover : CrossoverBase
     {
-        public bool IsOrdered { get; }
-        public IList<IChromosome> Cross(IList<IChromosome> parents)
+        public Crossover() : base(2, 2)
+        {
+        }
+        
+        public Crossover(int parentsNumber, int childrenNumber) : base(parentsNumber, childrenNumber)
+        {
+        }
+
+        public Crossover(int parentsNumber, int childrenNumber, int minChromosomeLength) : base(parentsNumber, childrenNumber, minChromosomeLength)
+        {
+        }
+
+        protected override IList<IChromosome> PerformCross(IList<IChromosome> parents)
         {
             
-            var children = new List<Chromosome>();
+            var children = new List<IChromosome>();
             
-            // Choose cut index
-            var cutIndex = (new Random()).Next(0, parents.Count);
-
             for (var i = 0; i < parents.Count; i += 2)
             {
                 // fist parent
@@ -24,14 +32,19 @@ namespace AirScheduling.Genetics
                 // second parent
                 var parent2 = (Chromosome)parents[i+1];
                 
+                // Choose cut index
+                var cutIndex = (new Random()).Next(0, parent1.Length);
                 
+                // First Child
+                var firstChild = parent1.PrependGenes(parent2.GetSliceOfChromosome(0, cutIndex));
+                    
+                var secondChild = parent2.PrependGenes(parent1.GetSliceOfChromosome(0, cutIndex));
                 
+                children.Add(parent1);
+                children.Add(parent2);
             }
             
+            return children;
         }
-
-        public int ParentsNumber { get; }
-        public int ChildrenNumber { get; }
-        public int MinChromosomeLength { get; }
     }
 }

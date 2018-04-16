@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using AirScheduling.Aviation;
 using GeneticSharp.Domain.Chromosomes;
@@ -83,9 +84,42 @@ namespace AirScheduling.Genetics
         /// <param name="from">Initial index (will be included)</param>
         /// <param name="to">Last index (will not be included in final list)</param>
         /// <returns></returns>
-        public IList GetSliceOfChromosome(int from, int to)
+        public IEnumerable<GeneticSharp.Domain.Chromosomes.Gene> GetSliceOfChromosome(int from, int to)
         {
             return GetGenes().ToList().GetRange(from, to - from);
+        }
+
+        /// <summary>
+        /// Retrieves a new chromosome with new prepended genes and with repeated genes cleared.
+        /// </summary>
+        /// <param name="genes">IList of genes to be prepended</param>
+        /// <returns>A new chromosome without repeated genes and a new head of genes</returns>
+        public IList PrependGenes(IEnumerable<GeneticSharp.Domain.Chromosomes.Gene> genes)
+        {
+            var curChromosome = GetGenes().ToList();
+            curChromosome.InsertRange(0, genes);
+
+            var toRemove = new List<object>();
+
+            for (var i = 0; i < curChromosome.Count - 1; i++)
+            {
+                var currentGene = curChromosome;
+                
+                for (var j = i + 1; j < curChromosome.Count; j++)
+                {
+                    if (curChromosome[i] != curChromosome[j]) continue;
+                    
+                    toRemove.Add(curChromosome[j]);
+                    break;
+                }
+            }
+
+            foreach (GeneticSharp.Domain.Chromosomes.Gene geneToBeRemoved in toRemove)
+            {
+                curChromosome.Remove(geneToBeRemoved);
+            }
+
+            return curChromosome;
         }
         
         
