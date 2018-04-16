@@ -40,8 +40,11 @@ namespace AirScheduling.Genetics
                 if (lastRunway == string.Empty)
                 {
                     lastRunway = currentGene.GetRunway().GetIdentification();
+                    _chromosome.LastLanding[lastRunway] =
+                        currentGene.GetRadarAircraft().GetAircraft().GetAircraftType().ToString();
                     
                     var distanceToCover = currentGene.GetRadarAircraft().GetDistanceToAirport();
+                    
                     // TODO: Should this speed be in mutations ?
                     var useSpeed = currentGene.GetRadarAircraft().GetAircraft().OptimalSpeed;
 
@@ -50,7 +53,9 @@ namespace AirScheduling.Genetics
                 else
                 {
                     var runwayToLand = currentGene.GetRunway();
-                    var timeToAdd = runwayToLand.GetTimeDependency(lastRunway, ("Heavy", "Heavy"));
+                    var lastAircrType = _chromosome.LastLanding[lastRunway];
+                    var currentAircType = currentGene.GetRadarAircraft().GetAircraft().GetAircraftType().ToString();
+                    var timeToAdd = runwayToLand.GetTimeDependency(lastRunway, (lastAircrType, currentAircType));
 
                     // Updating values from array of arrivals
                     for (var j = 0; j < arrayOfArrivals.Length; j++)

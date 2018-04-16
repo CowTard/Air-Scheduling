@@ -11,6 +11,7 @@ namespace AirScheduling.Genetics
     public class Chromosome: ChromosomeBase
     {
         private readonly Airport _airport;
+        public Dictionary<string, string> LastLanding { get; }
         
         /// <summary>
         /// Construtor that receives an airport radar
@@ -19,6 +20,7 @@ namespace AirScheduling.Genetics
         public Chromosome(Airport airport) : base(airport.Radar.Count)
         {
             _airport = airport;
+            LastLanding = new Dictionary<string, string>(airport.Runways.Count);
             GenerateAllGenes();
         }
 
