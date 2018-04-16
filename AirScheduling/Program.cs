@@ -40,8 +40,8 @@ namespace AirScheduling
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
-                MutationProbability = 0.1f,
-                Termination = new GenerationNumberTermination(100)
+                MutationProbability = 0.3f,
+                Termination = new GenerationNumberTermination(100000)
             };
             
             Console.WriteLine("GA running...");

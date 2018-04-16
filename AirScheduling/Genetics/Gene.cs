@@ -81,6 +81,8 @@ namespace AirScheduling.Genetics
             IncrementCost(CalculateArrivalFitness());
             IncrementCost(CalculateTripArrivalFitness());
             IncrementCost(CalculateRunwayFitness());
+
+            Cost = 1 / Cost;
         }
         
         /// <summary>
@@ -124,7 +126,7 @@ namespace AirScheduling.Genetics
                 return 0;
             else
             {
-                var exceedingTimeInSeconds = (_aircraft.GetNextFlightTime() / 60 ) - (_estimatedLandingTime / 60) - (30 * 60);
+                var exceedingTimeInSeconds = (_aircraft.GetNextFlightTime() / 60 ) - (_estimatedLandingTime / 60) - 30;
                 return 1000 * Math.Pow(exceedingTimeInSeconds, 2);
             }
         }
