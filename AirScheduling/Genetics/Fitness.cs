@@ -49,7 +49,9 @@ namespace AirScheduling.Genetics
                     var distanceToCover = currentGene.GetRadarAircraft().GetDistanceToAirport();
                     
                     // Time In Minutes
-                    timeOfFirstLanding = TimeSpan.FromMinutes( distanceToCover / (useSpeed / 60) );
+                    timeOfFirstLanding = TimeSpan.FromHours( distanceToCover / useSpeed);
+
+                    arrayOfArrivals = Enumerable.Repeat(timeOfFirstLanding, arrayOfArrivals.Length).ToArray();
                 }
                 else
                 {
@@ -62,8 +64,8 @@ namespace AirScheduling.Genetics
                     var distanceYetToTravel = currentGene.GetRadarAircraft().GetDistanceToAirport();
                     
                     // Times to travel each distances
-                    var timeTravelRequiredDistance = distanceRequired / (useSpeed / 60);
-                    var timeTravelToAirport = distanceYetToTravel / (useSpeed / 60);
+                    var timeTravelRequiredDistance = distanceRequired / useSpeed;
+                    var timeTravelToAirport = distanceYetToTravel / useSpeed;
                     
                     // Time to take into consideration
                     var _time = Math.Max(timeTravelToAirport, timeTravelRequiredDistance);
@@ -71,14 +73,13 @@ namespace AirScheduling.Genetics
                     // Updating values from array of arrivals
                     for (var j = 0; j < arrayOfArrivals.Length; j++)
                     {
-                        arrayOfArrivals[j] += TimeSpan.FromMinutes(_time);
+                        arrayOfArrivals[j] += TimeSpan.FromHours(_time);
                     }
 
                     var runwayIndex = _chromosome.GetAirport().ConvertRunwayInIndex(runwayToLand.GetIdentification());
 
                     ((Gene)_chromosome.GetGene(i).Value).SetArrivalTime(timeOfFirstLanding + arrayOfArrivals[runwayIndex]);
 
-                    //timeOfFirstLanding += arrayOfArrivals[runwayIndex];
                 }
             }
         }
