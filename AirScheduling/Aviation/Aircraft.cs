@@ -138,7 +138,7 @@ namespace AirScheduling.Aviation
         /// <returns>A double representing the time in seconds</returns>
         public double GetNextFlightTime()
         {
-            return _timeOfNextFlight * 60;
+            return TimeSpan.FromMinutes(_timeOfNextFlight).TotalMinutes;
         }
 
         /// <summary>

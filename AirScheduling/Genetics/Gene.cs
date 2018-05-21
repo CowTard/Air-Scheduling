@@ -9,12 +9,12 @@ namespace AirScheduling.Genetics
     public class Gene
     {
         private readonly AircraftRadar _aircraft;
-        private double _estimatedLandingTime;
+        private TimeSpan _estimatedLandingTime;
         private Airport.Runway _runway;
 
         public double Cost;
 
-        public Gene(AircraftRadar aircraft, Airport.Runway runway, double estimatedLandingTime)
+        public Gene(AircraftRadar aircraft, Airport.Runway runway, TimeSpan estimatedLandingTime)
         {
             _estimatedLandingTime = estimatedLandingTime;
             _aircraft = aircraft;
@@ -36,7 +36,7 @@ namespace AirScheduling.Genetics
         /// Adds time seconds into TimeSpan.Zero
         /// </summary>
         /// <param name="time"></param>
-        public void SetArrivalTime(double time)
+        public void SetArrivalTime(TimeSpan time)
         {
             _estimatedLandingTime = time;
             
@@ -49,7 +49,7 @@ namespace AirScheduling.Genetics
         /// Returns estimated landing time in seconds
         /// </summary>
         /// <returns></returns>
-        public double GetArrivalTime()
+        public TimeSpan GetArrivalTime()
         {
             return _estimatedLandingTime;
         }
@@ -92,13 +92,13 @@ namespace AirScheduling.Genetics
         private double CalculateArrivalFitness()
         {
             // Time it would take if aircraft would be approaching in differet speed
-            var optTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().OptimalSpeed;
-            var slowTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MinSpeed;
-            var fastTime = _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MaxSpeed;
+            var optTime = TimeSpan.FromHours( _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().OptimalSpeed);
+            var slowTime = TimeSpan.FromHours(_aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MinSpeed);
+            var fastTime = TimeSpan.FromHours(_aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MaxSpeed);
             
             
             // Optimal Interval
-            if (optTime * 0.9 >= _estimatedLandingTime && _estimatedLandingTime <= optTime * 1.1)
+            if (optTime.Ticks * 0.9 >= _estimatedLandingTime.Ticks && _estimatedLandingTime.Ticks <= optTime.Ticks * 1.1)
                 return 0;
 
             // Impossible Interval
@@ -107,11 +107,12 @@ namespace AirScheduling.Genetics
             
             // Between fastest and optimal
             if (_estimatedLandingTime >= fastTime && _estimatedLandingTime < optTime)
-                return  Math.Pow((optTime - _estimatedLandingTime), _aircraft.GetEmergencyState() + 2);
+                return  Math.Pow((optTime - _estimatedLandingTime).TotalMinutes, _aircraft.GetEmergencyState() + 2);
             
             // Between opt and slowest
             if (_estimatedLandingTime > optTime)
-                return Math.Pow(1/(1+ Math.Exp(-(_estimatedLandingTime - optTime))), _aircraft.GetEmergencyState() + 1);
+                return Math.Pow(1/(1+ Math.Exp(-(_estimatedLandingTime - optTime).TotalMinutes)),
+                    _aircraft.GetEmergencyState() + 1);
 
             return 0;
         }
@@ -122,12 +123,14 @@ namespace AirScheduling.Genetics
         /// <returns>Amount of cost to be added</returns>
         private double CalculateTripArrivalFitness()
         {
-            if (_estimatedLandingTime - _aircraft.GetNextFlightTime() > 30 * 60)
+            if (_estimatedLandingTime.TotalMinutes - _aircraft.GetNextFlightTime() > 30)
                 return 0;
             else
             {
-                var exceedingTimeInSeconds = (_aircraft.GetNextFlightTime() / 60 ) - (_estimatedLandingTime / 60) - 30;
-                return 1000 * Math.Pow(exceedingTimeInSeconds, 2);
+                var exceedingTimeInMinutes = _aircraft.GetNextFlightTime() - _estimatedLandingTime.TotalMinutes -
+                                             TimeSpan.FromMinutes(30).TotalMinutes;
+                
+                return 1000 * Math.Pow(exceedingTimeInMinutes, 2);
             }
         }
         
