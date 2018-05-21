@@ -28,9 +28,9 @@ namespace AirScheduling.Aviation
         /// </summary>
         /// <param name="aircraftType">Type of Aircraft <see cref="AircraftType"/></param>
         /// <param name="model">Model by which the aircraft is known</param>
-        /// <param name="maxSpeed">Max speed of this model in Knots</param>
-        /// <param name="optimalSpeed">The Stall speed of this model in knots</param>
-        /// <param name="minSpeed">The minimum speed of this model in knots</param>
+        /// <param name="maxSpeed">Max speed of this model in kmh</param>
+        /// <param name="optimalSpeed">The Stall speed of this model in kmh</param>
+        /// <param name="minSpeed">The minimum speed of this model in kmh</param>
         public Aircraft(AircraftType aircraftType, string model, double minSpeed, double optimalSpeed, double maxSpeed)
         {
             _aircraftType = aircraftType;
@@ -82,7 +82,7 @@ namespace AirScheduling.Aviation
         /// Constructor of the class
         /// </summary>
         /// <param name="flightId">Flight Identification</param>
-        /// <param name="distanceToAirport">Distance that separates the aircraft and the airport</param>
+        /// <param name="distanceToAirport">Distance in meters that separates the aircraft and the airport</param>
         /// <param name="aircraft">Object of the class <see cref="Aircraft"/></param>
         /// <param name="timeOfNextFlight">Time left in minutes for the next flight of this aircraft in minutes</param>
         /// <param name="emergency">Whether aircraft is in emergengy mode or not </param>
@@ -90,6 +90,8 @@ namespace AirScheduling.Aviation
         {
             _aircraft = aircraft;
             double.TryParse(distanceToAirport, out _distance);
+            // Convert to km
+            _distance = _distance / 1000;
             _timeOfNextFlight = timeOfNextFlight;
             _emergency = emergency;
             _flightId = flightId;

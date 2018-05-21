@@ -45,10 +45,12 @@ namespace AirScheduling.Genetics
                     
                     var distanceToCover = currentGene.GetRadarAircraft().GetDistanceToAirport();
                     
+                    
                     // TODO: Should this speed be in mutations ?
                     var useSpeed = currentGene.GetRadarAircraft().GetAircraft().OptimalSpeed;
 
-                    timeOfFirstLanding = distanceToCover / useSpeed;
+                    // Time In Minutes
+                    timeOfFirstLanding = distanceToCover / (useSpeed / 60);
                 }
                 else
                 {
