@@ -89,7 +89,7 @@ namespace AirScheduling
                 if (allRunways != null)
                     _currentAirport = new Airport(allRunways);
                 
-                var (runways, timeInterf) = read_runway_time_interference("../../Data/Airport" + Airport + "/Runway_times.csv");
+                var (runways, timeInterf) = read_runway_time_interference("../../Data/Airport" + Airport + "/Runway_landing_separation.csv");
                 
                 
                 if (runways.Length != timeInterf.Count())

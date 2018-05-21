@@ -73,7 +73,7 @@
     <Content Include="Data\AircraftDatabase.csv" />
     <Content Include="Data\Airport1\Radar.csv" />
     <Content Include="Data\Airport1\Runways.csv" />
-    <Content Include="Data\Airport1\Runway_times.csv" />
+    <Content Include="Data\Airport1\Runway_landing_separation.csv" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
