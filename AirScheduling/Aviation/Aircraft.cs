@@ -109,6 +109,7 @@ namespace AirScheduling.Aviation
         /// <summary>
         /// Returns the distance between airport and aircraft
         /// </summary>
+        /// <returns>Distance in KM to the airport</returns>
         public double GetDistanceToAirport()
         {
             return this._distance;

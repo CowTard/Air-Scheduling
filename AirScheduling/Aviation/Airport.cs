@@ -96,10 +96,10 @@ namespace AirScheduling.Aviation
             /// </summary>
             /// <param name="runway">Runway to be used</param>
             /// <param name="pairTypeAircraft"></param>
-            /// <returns></returns>
-            public double GetTimeDependency(string runway, (string, string) pairTypeAircraft)
+            /// <returns>Returns thee distance in km that needs to exist between landings</returns>
+            public double GetRequiredDistance(string runway, (string, string) pairTypeAircraft)
             {
-                return _timeDependency[runway][pairTypeAircraft];
+                return _timeDependency[runway][pairTypeAircraft] * 1.875;
             }
 
             /// <summary>

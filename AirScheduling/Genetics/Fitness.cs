@@ -36,7 +36,10 @@ namespace AirScheduling.Genetics
             for (var i = 0; i < _chromosome.Length; i++)
             {
                 var currentGene = (Gene)_chromosome.GetGene(i).Value;
-
+                
+                // TODO: Should this speed be in mutations ?
+                var useSpeed = currentGene.GetRadarAircraft().GetAircraft().OptimalSpeed;
+                
                 if (lastRunway == string.Empty)
                 {
                     lastRunway = currentGene.GetRunway().GetIdentification();
@@ -45,10 +48,6 @@ namespace AirScheduling.Genetics
                     
                     var distanceToCover = currentGene.GetRadarAircraft().GetDistanceToAirport();
                     
-                    
-                    // TODO: Should this speed be in mutations ?
-                    var useSpeed = currentGene.GetRadarAircraft().GetAircraft().OptimalSpeed;
-
                     // Time In Minutes
                     timeOfFirstLanding = distanceToCover / (useSpeed / 60);
                 }
@@ -57,12 +56,19 @@ namespace AirScheduling.Genetics
                     var runwayToLand = currentGene.GetRunway();
                     var lastAircrType = _chromosome.LastLanding[lastRunway];
                     var currentAircType = currentGene.GetRadarAircraft().GetAircraft().GetAircraftType().ToString();
-                    var timeToAdd = runwayToLand.GetTimeDependency(lastRunway, (lastAircrType, currentAircType));
-
+                    
+                    // Distances inherited
+                    var distanceRequired = runwayToLand.GetRequiredDistance(lastRunway, (lastAircrType, currentAircType));
+                    var distanceYetToTravel = currentGene.GetRadarAircraft().GetDistanceToAirport();
+                    
+                    // Times to travel each distances
+                    var timeTravelRequiredDistance = distanceRequired / (useSpeed / 60);
+                    var timeTravelToAirport = distanceYetToTravel / (useSpeed / 60);
+                    
                     // Updating values from array of arrivals
                     for (var j = 0; j < arrayOfArrivals.Length; j++)
                     {
-                        arrayOfArrivals[j] += timeToAdd;
+                        arrayOfArrivals[j] += Math.Max(timeTravelToAirport, timeTravelRequiredDistance);
                     }
 
                     var runwayIndex = _chromosome.GetAirport().ConvertRunwayInIndex(runwayToLand.GetIdentification());
