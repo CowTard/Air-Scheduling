@@ -18,7 +18,7 @@ namespace AirScheduling.Aviation
     public class Aircraft
     {
         private string _model;
-        private AircraftType _aircraftType;
+        private readonly AircraftType _aircraftType;
         public double MaxSpeed { get; }
         public double OptimalSpeed { get; }
         public double MinSpeed { get; }
@@ -38,9 +38,6 @@ namespace AirScheduling.Aviation
             MaxSpeed = maxSpeed;
             OptimalSpeed = optimalSpeed;
             MinSpeed = minSpeed;
-
-
-            OptimalSpeed = 500;
         }
         
         /// <summary>

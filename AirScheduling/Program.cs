@@ -50,21 +50,20 @@ namespace AirScheduling
             {
                 var bestChromosome = ga.BestChromosome as Chromosome;
                 var bestFitness = bestChromosome.Fitness.Value;
+
+                if (bestFitness == latestFitness) return;
                 
-                if (bestFitness != latestFitness)
-                {
-                    latestFitness = bestFitness;
+                latestFitness = bestFitness;
 
-                    Console.WriteLine(
-                        "[{2}] Generation {0,2}: {1}",
-                        ga.GenerationsNumber,
-                        bestFitness.ToString(),
-                        (DateTime.Now - initialTimeSpan).ToString()
-                    );
-                }
+                Console.WriteLine(
+                    "[{2}] Generation {0,2}: {1}",
+                    ga.GenerationsNumber,
+                    bestFitness.ToString(),
+                    (DateTime.Now - initialTimeSpan).ToString()
+                );
             };
+            
             ga.Start();
-
             Console.WriteLine("Best solution found is: " + Environment.NewLine + "{0} ", ga.BestChromosome);
             
         }
@@ -81,10 +80,10 @@ namespace AirScheduling
                 var aircraftTypes = read_aircraft_database("../../Data/AircraftDatabase.csv");
                 radar = new Thread(() => read_radar_thread("../../Data/Airport" + Airport + "/Radar.csv"));
                 var allRunways = read_runway_information("../../Data/Airport" + Airport + "/Runways.csv");
-                var landing_distances = read_landing_distances("../../Data/Airport" + Airport + "/LandingRoutes.csv");
+                var landingDistances = read_landing_distances("../../Data/Airport" + Airport + "/LandingRoutes.csv");
                 
                 if (allRunways != null)
-                    _currentAirport = new Airport(allRunways);
+                    _currentAirport = new Airport(allRunways, landingDistances);
                 
                 var (runways, timeInterf) = read_runway_time_interference("../../Data/Airport" + Airport + "/Runway_landing_separation.csv");
                 
