@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\AircraftDatabase.csv" />
+    <Content Include="Data\Airport1\LandingRoutes.csv" />
     <Content Include="Data\Airport1\Radar.csv" />
     <Content Include="Data\Airport1\Runways.csv" />
     <Content Include="Data\Airport1\Runway_landing_separation.csv" />

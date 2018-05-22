@@ -41,30 +41,33 @@ namespace AirScheduling
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
                 MutationProbability = 0.3f,
-                Termination = new GenerationNumberTermination(100000)
+                Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(1))
             };
+
+            var initialTimeSpan = DateTime.Now;
             
-            Console.WriteLine("GA running...");
+            Console.WriteLine("[{0}] Scheduling started", initialTimeSpan.ToString());
             var latestFitness = 0.0;
+            
+            
             ga.GenerationRan += (sender, e) =>
             {
                 var bestChromosome = ga.BestChromosome as Chromosome;
                 var bestFitness = bestChromosome.Fitness.Value;
-
+                
+                // Running time
+                
+                
                 if (bestFitness != latestFitness)
                 {
                     latestFitness = bestFitness;
 
                     Console.WriteLine(
-                        "Generation {0,2}: {1}",
+                        "[{2}] Generation {0,2}: {1}",
                         ga.GenerationsNumber,
-                        bestFitness
+                        bestFitness.ToString(),
+                        (DateTime.Now - initialTimeSpan).ToString()
                     );
-                }
-                else
-                {
-                    Console.WriteLine("Generation {0}: Did not find a better solution", 
-                        ga.GenerationsNumber);
                 }
             };
             ga.Start();

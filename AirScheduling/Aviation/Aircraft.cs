@@ -38,6 +38,9 @@ namespace AirScheduling.Aviation
             MaxSpeed = maxSpeed;
             OptimalSpeed = optimalSpeed;
             MinSpeed = minSpeed;
+
+
+            OptimalSpeed = 500;
         }
         
         /// <summary>
