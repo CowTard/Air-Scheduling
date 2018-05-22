@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,8 +6,6 @@ using System.Threading;
 using AirScheduling.Aviation;
 using AirScheduling.Genetics;
 using GeneticSharp.Domain;
-using GeneticSharp.Domain.Crossovers;
-using GeneticSharp.Domain.Mutations;
 using GeneticSharp.Domain.Populations;
 using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
@@ -32,10 +28,10 @@ namespace AirScheduling
             {}
             
             var selection = new EliteSelection();
-            var crossover = new Genetics.Crossover();
-            var mutation = new Genetics.Mutation();
-            var fitness = new Genetics.Fitness();
-            var chromosome = new Genetics.Chromosome(_currentAirport);
+            var crossover = new Crossover();
+            var mutation = new Mutation();
+            var fitness = new Fitness();
+            var chromosome = new Chromosome(_currentAirport);
             var population = new Population (100, 300, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
@@ -54,9 +50,6 @@ namespace AirScheduling
             {
                 var bestChromosome = ga.BestChromosome as Chromosome;
                 var bestFitness = bestChromosome.Fitness.Value;
-                
-                // Running time
-                
                 
                 if (bestFitness != latestFitness)
                 {
@@ -88,6 +81,7 @@ namespace AirScheduling
                 var aircraftTypes = read_aircraft_database("../../Data/AircraftDatabase.csv");
                 radar = new Thread(() => read_radar_thread("../../Data/Airport" + Airport + "/Radar.csv"));
                 var allRunways = read_runway_information("../../Data/Airport" + Airport + "/Runways.csv");
+                var landing_distances = read_landing_distances("../../Data/Airport" + Airport + "/LandingRoutes.csv");
                 
                 if (allRunways != null)
                     _currentAirport = new Airport(allRunways);
@@ -117,6 +111,7 @@ namespace AirScheduling
                         }
                     }
                 }
+                
                 
                 radar.Start();
                 
@@ -153,7 +148,7 @@ namespace AirScheduling
                     var maximumSpeed = double.Parse(splittedLine[5]);
                 
                     var aircraftSpecification = new Aircraft(type, model, minimumSpeed, optimalSpeed, maximumSpeed);
-                    AirScheduling._aircraftModels.Add(aircraftSpecification);
+                    _aircraftModels.Add(aircraftSpecification);
                 }
             }
             catch (Exception e)
@@ -193,7 +188,7 @@ namespace AirScheduling
                             continue;
 
                         var aicraftInRadar = new AircraftRadar(flighId, distanceToAirport,
-                            AirScheduling._aircraftModels[aircrafId - 1],
+                            _aircraftModels[aircrafId - 1],
                             timeNextFlight, urgency);
 
                         _currentAirport.Radar.TryAdd(flighId, aicraftInRadar);
@@ -268,6 +263,18 @@ namespace AirScheduling
 
             return (runways, interferences);
         }
+        
+        /// <summary>
+        /// Function responsible for reading and handling the file that contains landing approach's landings
+        /// </summary>
+        /// <param name="fileUrl">Url for the file to be read</param>
+        /// <returns>Dictionary of runwayID, length</returns>
+        private static Dictionary<string, double> read_landing_distances(string fileUrl)
+        {
+            var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
+
+            return lines.Select(line => line.Split(',')).ToDictionary(info => info[0], info => double.Parse(info[1].Trim()));
+    }
 
         /// <summary>
         /// Convertes an index of a matrix to a specific type of aircraft
@@ -277,14 +284,17 @@ namespace AirScheduling
         /// <exception cref="Exception"></exception>
         private static string ConvertIndexToTypeOfAircraft(int index)
         {
-            if (index == 0)
-                return "Heavy";
-            else if (index == 1)
-                return "Medium";
-            else if (index == 2)
-                return "Light";
-            else
-                throw new Exception();
+            switch (index)
+            {
+                case 0:
+                    return "Heavy";
+                case 1:
+                    return "Medium";
+                case 2:
+                    return "Light";
+            }
+
+            throw new Exception();
         }
         
         
