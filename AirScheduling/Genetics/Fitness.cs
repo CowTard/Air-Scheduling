@@ -65,7 +65,9 @@ namespace AirScheduling.Genetics
                     
                     // Times to travel each distances
                     var timeTravelRequiredDistance = distanceRequired / useSpeed;
-                    var timeTravelToAirport = distanceYetToTravel / useSpeed;
+                    var timeTravelToAirport = currentGene.GetRadarAircraft()
+                        .GetTimeToLand(distanceRequired,
+                            _chromosome.GetAirport().GetApproachLength(currentGene.GetRunway().GetIdentification()));
                     
                     // Time to take into consideration
                     var _time = Math.Max(timeTravelToAirport, timeTravelRequiredDistance);

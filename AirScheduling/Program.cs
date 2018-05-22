@@ -33,6 +33,7 @@ namespace AirScheduling
             var fitness = new Fitness();
             var chromosome = new Chromosome(_currentAirport);
             var population = new Population (100, 300, chromosome);
+            population.GenerationStrategy = new PerformanceGenerationStrategy();
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {

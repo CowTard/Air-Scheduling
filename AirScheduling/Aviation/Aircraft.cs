@@ -47,14 +47,15 @@ namespace AirScheduling.Aviation
         /// <returns>An AircraftType equivalent of the passed string</returns>
         public static AircraftType convert_string_into_AicraftType(string typeOfAircraft)
         {
-
-            if (typeOfAircraft == "Light")
-                return AircraftType.Light;
-            else if (typeOfAircraft == "Medium")
-                return AircraftType.Medium;
-            else
-                return AircraftType.Heavy;
-
+            switch (typeOfAircraft)
+            {
+                case "Light":
+                    return AircraftType.Light;
+                case "Medium":
+                    return AircraftType.Medium;
+                default:
+                    return AircraftType.Heavy;
+            }
         }
         
         /// <summary>
@@ -148,6 +149,18 @@ namespace AirScheduling.Aviation
         public override string ToString()
         {
             return _flightId + " " + _emergency;
+        }
+
+        /// <summary>
+        ///  Function that calculates based on chosen aircraft speed and the obligatory speed on landing approaches
+        ///  the time it will take for this aircraft to be able to land
+        /// </summary>
+        /// <param name="distanceToCover">Distance in KM between the current position to the airport</param>
+        /// <param name="landingDistance">Distance in KM between the first landing approach point till the last</param>
+        /// <returns>Amount of hours it will take</returns>
+        public double GetTimeToLand(double distanceToCover, double landingDistance)
+        {
+            return (distanceToCover / this._aircraft.OptimalSpeed) + (landingDistance / 259);
         }
     }
 }

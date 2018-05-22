@@ -46,6 +46,17 @@ namespace AirScheduling.Aviation
         }
         
         /// <summary>
+        /// Function that retrieves the length of a landing approach
+        /// </summary>
+        /// <param name="runway"></param>
+        /// <returns></returns>
+        public double GetApproachLength(string runway)
+        {
+            LandingTimes.TryGetValue(runway, out var value);
+            return value;
+        }
+        
+        /// <summary>
         /// A Class that holds identification of a runway as well as its abilty to accept types of aircrafts
         /// </summary>
         public class Runway
@@ -122,7 +133,6 @@ namespace AirScheduling.Aviation
             {
                 return _permissions[typeOfAircraft];
             }
-
             
             /// <summary>
             /// Override of the function ToString()
