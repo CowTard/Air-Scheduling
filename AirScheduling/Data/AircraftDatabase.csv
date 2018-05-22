@@ -1,4 +1,4 @@
-Id, Model, Type, Minimum speed, Optimal Speed, Maximum speed // speed in meters.second
+Id,Model,Type,Minimum speed,Optimal Speed,Maximum speed // speed in meters.second
 1,Canadair Regional Jet CRJ-700,Medium,829,829,876
 2,Embraer EMB-145XR,Medium,795,795,835
 3,Embraer ERJ-135,Medium,795,795,835
