@@ -23,6 +23,21 @@ namespace AirScheduling.Genetics
             LastLanding = new Dictionary<string, string>(airport.Runways.Count);
             GenerateAllGenes();
         }
+        
+        /// <summary>
+        /// Constructor used to create a new chromossome when crossover happens
+        /// </summary>
+        /// <param name="airport"></param>
+        /// <param name="genes"></param>
+        public Chromosome(Airport airport, IList<GeneticSharp.Domain.Chromosomes.Gene> genes) : base(
+            airport.Radar.Count)
+        {
+            _airport = airport;
+            LastLanding = new Dictionary<string, string>(airport.Runways.Count);
+            
+            for(var i = 0; i < _airport.Radar.Count; i++)
+                ReplaceGene(i, genes[i]);
+        }
 
         /// <summary>
         /// Responsible for iterating all the aircrafts present in radar and populate the chromossome
@@ -96,17 +111,15 @@ namespace AirScheduling.Genetics
         /// </summary>
         /// <param name="genes">IList of genes to be prepended</param>
         /// <returns>A new chromosome without repeated genes and a new head of genes</returns>
-        public IList PrependGenes(IEnumerable<GeneticSharp.Domain.Chromosomes.Gene> genes)
+        public IList<GeneticSharp.Domain.Chromosomes.Gene> PrependGenes(IEnumerable<GeneticSharp.Domain.Chromosomes.Gene> genes)
         {
             var curChromosome = GetGenes().ToList();
             curChromosome.InsertRange(0, genes);
 
-            var toRemove = new List<object>();
+            var toRemove = new List<GeneticSharp.Domain.Chromosomes.Gene>();
 
             for (var i = 0; i < curChromosome.Count - 1; i++)
             {
-                var currentGene = curChromosome;
-                
                 for (var j = i + 1; j < curChromosome.Count; j++)
                 {
                     if (curChromosome[i] != curChromosome[j]) continue;
@@ -116,7 +129,7 @@ namespace AirScheduling.Genetics
                 }
             }
 
-            foreach (GeneticSharp.Domain.Chromosomes.Gene geneToBeRemoved in toRemove)
+            foreach (var geneToBeRemoved in toRemove)
             {
                 curChromosome.Remove(geneToBeRemoved);
             }

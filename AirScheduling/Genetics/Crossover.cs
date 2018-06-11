@@ -22,7 +22,7 @@ namespace AirScheduling.Genetics
         protected override IList<IChromosome> PerformCross(IList<IChromosome> parents)
         {
             
-            var children = new List<IChromosome>();
+            var chr = new List<IChromosome>();
             
             for (var i = 0; i < parents.Count; i += 2)
             {
@@ -40,11 +40,14 @@ namespace AirScheduling.Genetics
                     
                 var secondChild = parent2.PrependGenes(parent1.GetSliceOfChromosome(0, cutIndex));
                 
-                children.Add(parent1);
-                children.Add(parent2);
+                chr.Add(parent1);
+                chr.Add(parent2);
+                chr.Add(new Chromosome(parent1.GetAirport(), firstChild));
+                chr.Add(new Chromosome(parent2.GetAirport(), secondChild));
+
             }
             
-            return children;
+            return chr;
         }
     }
 }

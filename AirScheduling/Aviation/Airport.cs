@@ -112,7 +112,7 @@ namespace AirScheduling.Aviation
             /// <returns>Returns thee distance in km that needs to exist between landings</returns>
             public double GetRequiredDistance(string runway, (string, string) pairTypeAircraft)
             {
-                return _timeDependency[runway][pairTypeAircraft] * 1.875;
+                return _timeDependency[runway][pairTypeAircraft]; //* 1.875;
             }
 
             /// <summary>

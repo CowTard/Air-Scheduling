@@ -7,6 +7,7 @@ using AirScheduling.Aviation;
 using AirScheduling.Genetics;
 using GeneticSharp.Domain;
 using GeneticSharp.Domain.Populations;
+using GeneticSharp.Domain.Reinsertions;
 using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
 
@@ -14,7 +15,7 @@ namespace AirScheduling
 {
     internal class AirScheduling
     {
-        private const string Airport = "1";
+        private const string Airport = "2";
         private static List<Aircraft> _aircraftModels = new List<Aircraft>();
         private static Thread radar;
 
@@ -28,33 +29,27 @@ namespace AirScheduling
             {}
             
             var selection = new EliteSelection();
-            var crossover = new Crossover();
+            var crossover = new Crossover(250, 250);
             var mutation = new Mutation();
             var fitness = new Fitness();
             var chromosome = new Chromosome(_currentAirport);
-            var population = new Population (100, 300, chromosome);
-            population.GenerationStrategy = new PerformanceGenerationStrategy();
+            var population = new Population (500, 1000, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
-                MutationProbability = 0.3f,
+                MutationProbability = 0.1f,
                 Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(1))
             };
 
             var initialTimeSpan = DateTime.Now;
             
-            Console.WriteLine("[{0}] Scheduling started", initialTimeSpan.ToString());
-            var latestFitness = 0.0;
+            Console.WriteLine("[{0}] Scheduling started", initialTimeSpan);
             
             
             ga.GenerationRan += (sender, e) =>
             {
                 var bestChromosome = ga.BestChromosome as Chromosome;
                 var bestFitness = bestChromosome.Fitness.Value;
-
-                if (bestFitness == latestFitness) return;
-                
-                latestFitness = bestFitness;
 
                 Console.WriteLine(
                     "[{2}] Generation {0,2}: {1}",
@@ -66,7 +61,8 @@ namespace AirScheduling
             
             ga.Start();
             Console.WriteLine("Best solution found is: " + Environment.NewLine + "{0} ", ga.BestChromosome);
-            
+            ga.Stop();
+            radar.Interrupt();
         }
 
         /// <summary>
@@ -182,14 +178,14 @@ namespace AirScheduling
                         var aircrafId = int.Parse(splittedLine[2]);
                         var urgency = bool.Parse(splittedLine[3]);
                         var timeNextFlight = double.Parse(splittedLine[4]);
-                        var prec = splittedLine[5];
+                        var time = TimeSpan.FromMinutes(double.Parse(splittedLine[5]));
 
                         if (_currentAirport.Radar.ContainsKey(flighId))
                             continue;
 
                         var aicraftInRadar = new AircraftRadar(flighId, distanceToAirport,
                             _aircraftModels[aircrafId - 1],
-                            timeNextFlight, urgency);
+                            timeNextFlight, urgency, time);
 
                         _currentAirport.Radar.TryAdd(flighId, aicraftInRadar);
                     }

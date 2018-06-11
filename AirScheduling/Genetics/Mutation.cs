@@ -64,8 +64,9 @@ namespace AirScheduling.Genetics
             var indexToMutate = rnd.Next(chromosome.Length);
 
             var currentRunway = ((Gene) chromosome.GetGene(indexToMutate).Value).GetRunway().GetIdentification();
-            var allRunways = ((Chromosome) chromosome).GetAirport().Runways.Keys;
-            allRunways.ToList().Remove(currentRunway);
+            var allRunways = ((Chromosome) chromosome).GetAirport().Runways.Keys.ToList();
+            
+            allRunways.Remove(currentRunway);
 
             var chosenRunway = ((Chromosome) chromosome).GetAirport().Runways[allRunways.ToList()[rnd.Next(allRunways.Count)]];
             

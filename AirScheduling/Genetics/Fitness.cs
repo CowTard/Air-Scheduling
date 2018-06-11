@@ -49,9 +49,10 @@ namespace AirScheduling.Genetics
                     var distanceToCover = currentGene.GetRadarAircraft().GetDistanceToAirport();
                     
                     // Time In Minutes
-                    timeOfFirstLanding = TimeSpan.FromHours( distanceToCover / useSpeed);
+                    timeOfFirstLanding = TimeSpan.Zero;//TimeSpan.FromHours( distanceToCover / useSpeed);
 
                     arrayOfArrivals = Enumerable.Repeat(timeOfFirstLanding, arrayOfArrivals.Length).ToArray();
+                    ((Gene)_chromosome.GetGene(i).Value).SetArrivalTime(timeOfFirstLanding);
                 }
                 else
                 {
@@ -60,26 +61,31 @@ namespace AirScheduling.Genetics
                     var currentAircType = currentGene.GetRadarAircraft().GetAircraft().GetAircraftType().ToString();
                     
                     // Distances inherited
-                    var distanceRequired = runwayToLand.GetRequiredDistance(lastRunway, (lastAircrType, currentAircType));
+                    var distanceRequired = runwayToLand.GetRequiredDistance(lastRunway, (currentAircType, lastAircrType));
                     var distanceYetToTravel = currentGene.GetRadarAircraft().GetDistanceToAirport();
                     
                     // Times to travel each distances
-                    var timeTravelRequiredDistance = distanceRequired / useSpeed;
-                    var timeTravelToAirport = currentGene.GetRadarAircraft()
-                        .GetTimeToLand(distanceRequired,
-                            _chromosome.GetAirport().GetApproachLength(currentGene.GetRunway().GetIdentification()));
+                    //var timeTravelRequiredDistance = distanceRequired / useSpeed;
+                    /*var timeTravelToAirport = currentGene.GetRadarAircraft()
+                        .GetTimeToLand(distanceYetToTravel,
+                            _chromosome.GetAirport().GetApproachLength(currentGene.GetRunway().GetIdentification()));*/
                     
                     // Time to take into consideration
-                    var _time = Math.Max(timeTravelToAirport, timeTravelRequiredDistance);
+                    //var _time = Math.Max(timeTravelToAirport, timeTravelRequiredDistance);
                     
                     // Updating values from array of arrivals
-                    for (var j = 0; j < arrayOfArrivals.Length; j++)
+                    /*for (var j = 0; j < arrayOfArrivals.Length; j++)
                     {
-                        arrayOfArrivals[j] += TimeSpan.FromHours(_time);
-                    }
+                        arrayOfArrivals[j] += TimeSpan.FromSeconds(distanceRequired);//TimeSpan.FromHours(distanceRequired) + TimeSpan.FromMinutes(0.5);
+                    }*/
 
                     var runwayIndex = _chromosome.GetAirport().ConvertRunwayInIndex(runwayToLand.GetIdentification());
 
+                    for(var ti = 0; ti < arrayOfArrivals.Length; ti++)
+                    {
+                        arrayOfArrivals[ti] += TimeSpan.FromSeconds(distanceRequired);
+                    }
+                    
                     ((Gene)_chromosome.GetGene(i).Value).SetArrivalTime(timeOfFirstLanding + arrayOfArrivals[runwayIndex]);
 
                 }

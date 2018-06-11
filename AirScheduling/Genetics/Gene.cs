@@ -82,7 +82,7 @@ namespace AirScheduling.Genetics
             IncrementCost(CalculateTripArrivalFitness());
             IncrementCost(CalculateRunwayFitness());
 
-            Cost = 1 / Cost;
+            Cost = 1 / (Cost + 1);
         }
         
         /// <summary>
@@ -91,29 +91,32 @@ namespace AirScheduling.Genetics
         /// <returns>Cost to be added</returns>
         private double CalculateArrivalFitness()
         {
-            // Time it would take if aircraft would be approaching in differet speed
+            /* Time it would take if aircraft would be approaching in differet speed
             var optTime = TimeSpan.FromHours( _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().OptimalSpeed);
             var slowTime = TimeSpan.FromHours(_aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MinSpeed);
             var fastTime = TimeSpan.FromHours(_aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MaxSpeed);
-            
+            */
+
+            var optTime = _aircraft.GetDesiredLandingTime();
             
             // Optimal Interval
-            if (optTime.Ticks * 0.9 >= _estimatedLandingTime.Ticks && _estimatedLandingTime.Ticks <= optTime.Ticks * 1.1)
+            if (optTime.Ticks * 0.8 >= _estimatedLandingTime.Ticks && _estimatedLandingTime.Ticks <= optTime.Ticks * 1.2)
                 return 0;
 
-            // Impossible Interval
+            /* Impossible Interval
             if (_estimatedLandingTime < fastTime)
-                return double.MaxValue;
+                return double.MaxValue; */
             
             // Between fastest and optimal
-            if (_estimatedLandingTime >= fastTime && _estimatedLandingTime < optTime)
-                return  Math.Pow((optTime - _estimatedLandingTime).TotalMinutes, _aircraft.GetEmergencyState() + 2);
+            //if (_estimatedLandingTime.Ticks >= optTime.Ticks * 1.1)
+                return  Math.Pow((_estimatedLandingTime - optTime).TotalMinutes, _aircraft.GetEmergencyState()*4 + 2);
             
-            // Between opt and slowest
+            /* Between opt and slowest
             if (_estimatedLandingTime > optTime)
                 return Math.Pow(1/(1+ Math.Exp(-(_estimatedLandingTime - optTime).TotalMinutes)),
                     _aircraft.GetEmergencyState() + 1);
-
+            */
+            
             return 0;
         }
 
@@ -123,14 +126,14 @@ namespace AirScheduling.Genetics
         /// <returns>Amount of cost to be added</returns>
         private double CalculateTripArrivalFitness()
         {
-            if (_estimatedLandingTime.TotalMinutes - _aircraft.GetNextFlightTime() > 30)
+            if (_aircraft.GetNextFlightTime() - _estimatedLandingTime.TotalMinutes > 30)
                 return 0;
             else
             {
                 var exceedingTimeInMinutes = _aircraft.GetNextFlightTime() - _estimatedLandingTime.TotalMinutes -
                                              TimeSpan.FromMinutes(30).TotalMinutes;
                 
-                return 1000 * Math.Pow(exceedingTimeInMinutes, 2);
+                return Math.Pow(exceedingTimeInMinutes, 2);
             }
         }
         

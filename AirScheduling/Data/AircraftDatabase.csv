@@ -1,7 +1,7 @@
 Id,Model,Type,Minimum speed,Optimal Speed,Maximum speed // speed in meters.second
-1,Canadair Regional Jet CRJ-700,Medium,829,829,876
+1,Canadair Regional Jet CRJ-700,Light,829,829,876
 2,Embraer EMB-145XR,Medium,795,795,835
 3,Embraer ERJ-135,Medium,795,795,835
-4,Boeing 717-200,Medium,829,829,876
+4,Boeing 717-200,Heavy,829,829,876
 5,Boeing 737-700,Medium,795,795,835
 6,Embraer 175,Medium,795,795,835
