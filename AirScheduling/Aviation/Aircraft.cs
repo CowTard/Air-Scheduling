@@ -39,7 +39,7 @@ namespace AirScheduling.Aviation
             OptimalSpeed = optimalSpeed;
             MinSpeed = minSpeed;
         }
-        
+
         /// <summary>
         /// Static function responsible for converting a string into an AircraftType
         /// </summary>
@@ -57,7 +57,7 @@ namespace AirScheduling.Aviation
                     return AircraftType.Heavy;
             }
         }
-        
+
         /// <summary>
         /// Gets the aircraft's type
         /// </summary>
@@ -67,7 +67,7 @@ namespace AirScheduling.Aviation
             return _aircraftType;
         }
     }
-    
+
     /// <summary>
     /// Class that holds information about aircrafts that appear on airport's radar
     /// </summary>
@@ -89,7 +89,8 @@ namespace AirScheduling.Aviation
         /// <param name="aircraft">Object of the class <see cref="Aircraft"/></param>
         /// <param name="timeOfNextFlight">Time left in minutes for the next flight of this aircraft in minutes</param>
         /// <param name="emergency">Whether aircraft is in emergengy mode or not </param>
-        public AircraftRadar(string flightId, string distanceToAirport, Aircraft aircraft, double timeOfNextFlight, bool emergency, TimeSpan time)
+        public AircraftRadar(string flightId, string distanceToAirport, Aircraft aircraft, double timeOfNextFlight,
+            bool emergency, TimeSpan time)
         {
             _aircraft = aircraft;
             double.TryParse(distanceToAirport, out _distance);
@@ -100,7 +101,7 @@ namespace AirScheduling.Aviation
             _flightId = flightId;
             _time = time;
         }
-        
+
         /// <summary>
         /// Returns the desired time to landing
         /// </summary>
@@ -109,7 +110,7 @@ namespace AirScheduling.Aviation
         {
             return this._time;
         }
-        
+
         /// <summary>
         /// Returns the aircraft
         /// </summary>

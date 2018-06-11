@@ -39,7 +39,7 @@ namespace AirScheduling.Genetics
         public void SetArrivalTime(TimeSpan time)
         {
             _estimatedLandingTime = time;
-            
+
             CalculateFitnessFunction();
 
             return;
@@ -72,7 +72,7 @@ namespace AirScheduling.Genetics
             return _aircraft;
         }
 
-        
+
         /// <summary>
         /// Responsible for calculating all the parts of the fitness function
         /// </summary>
@@ -84,40 +84,38 @@ namespace AirScheduling.Genetics
 
             Cost = 1 / (Cost + 1);
         }
-        
+
         /// <summary>
         /// Calculates the value to be added to the cost function related to the aircraft's arrival time
         /// </summary>
         /// <returns>Cost to be added</returns>
         private double CalculateArrivalFitness()
         {
-            /* Time it would take if aircraft would be approaching in differet speed
-            var optTime = TimeSpan.FromHours( _aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().OptimalSpeed);
-            var slowTime = TimeSpan.FromHours(_aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MinSpeed);
-            var fastTime = TimeSpan.FromHours(_aircraft.GetDistanceToAirport() / _aircraft.GetAircraft().MaxSpeed);
-            */
 
             var optTime = _aircraft.GetDesiredLandingTime();
-            
+
             // Optimal Interval
-            if (optTime.Ticks * 0.8 >= _estimatedLandingTime.Ticks && _estimatedLandingTime.Ticks <= optTime.Ticks * 1.2)
+            if (optTime.Ticks * 0.8 >= _estimatedLandingTime.Ticks &&
+                _estimatedLandingTime.Ticks <= optTime.Ticks * 1.2)
                 return 0;
 
-            /* Impossible Interval
-            if (_estimatedLandingTime < fastTime)
-                return double.MaxValue; */
-            
             // Between fastest and optimal
-            //if (_estimatedLandingTime.Ticks >= optTime.Ticks * 1.1)
-                return  Math.Pow((_estimatedLandingTime - optTime).TotalMinutes, _aircraft.GetEmergencyState()*4 + 2);
+            // 66.55 $/min for crew
+            if (_estimatedLandingTime.Ticks >= optTime.Ticks * 1.2)
+            {
+                var delayMinutes = (optTime - _estimatedLandingTime).Minutes;
+                return 66.55 * delayMinutes * (_aircraft.GetEmergencyState() + 1);
+            }
             
-            /* Between opt and slowest
-            if (_estimatedLandingTime > optTime)
-                return Math.Pow(1/(1+ Math.Exp(-(_estimatedLandingTime - optTime).TotalMinutes)),
-                    _aircraft.GetEmergencyState() + 1);
-            */
-            
-            return 0;
+            //Before predicted
+            // 21.25 $/min for pilots + 20 $/min per fuel spent by increasing speed
+            if (_estimatedLandingTime.Ticks < optTime.Ticks * 0.8)
+            {
+                var delayMinutes = (optTime - _estimatedLandingTime).Minutes;
+                return (21.24 + 20.0) * delayMinutes;
+            }
+
+            return double.MaxValue;
         }
 
         /// <summary>
@@ -130,13 +128,17 @@ namespace AirScheduling.Genetics
                 return 0;
             else
             {
-                var exceedingTimeInMinutes = _aircraft.GetNextFlightTime() - _estimatedLandingTime.TotalMinutes -
-                                             TimeSpan.FromMinutes(30).TotalMinutes;
+
+                var nextFlightTime = _aircraft.GetNextFlightTime();
+                var minimumInterval = TimeSpan.FromMinutes(30);
                 
-                return Math.Pow(exceedingTimeInMinutes, 2);
+                var exceedingTimeInMinutes = nextFlightTime - _estimatedLandingTime.TotalMinutes -
+                                             minimumInterval.TotalMinutes;
+
+                return (62.55 + 37.6 / 60) * Math.Abs(exceedingTimeInMinutes);
             }
         }
-        
+
         /// <summary>
         /// Calculates the value to be added to the cost function related to the runway availability to receive this type of aircraft
         /// </summary>
@@ -147,7 +149,7 @@ namespace AirScheduling.Genetics
                 ? 0
                 : double.MaxValue;
         }
-        
+
         /// <summary>
         /// Function that should be used to increment cost by n amount
         /// </summary>
@@ -168,7 +170,7 @@ namespace AirScheduling.Genetics
             {
                 throw new NullReferenceException("Gene passed to compared is null.");
             }
-            
+
             var gene = ((Gene) obj);
             return this._aircraft.GetFlightIdentification() == gene._aircraft.GetFlightIdentification();
         }

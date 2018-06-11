@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Mutations;
 
 namespace AirScheduling.Genetics
 {
-    public class Mutation: IMutation
+    public class Mutation : IMutation
     {
-        
-        public bool IsOrdered { get; }
-        
         public void Mutate(IChromosome chromosome, float probability)
         {
             var rnd = (new Random()).NextDouble();
-            
-            if (!(rnd < probability)) return;
-            
-            chromosome = PerformeSequenceMutation(chromosome);
-            chromosome = PerformeRunwayMutation(chromosome);
 
+            if (!(rnd < probability)) return;
+
+            var t = chromosome;
+            chromosome = PerformeSequenceMutation(chromosome);
+            PerformeRunwayMutation(chromosome);
         }
 
         /// <summary>
@@ -65,14 +63,17 @@ namespace AirScheduling.Genetics
 
             var currentRunway = ((Gene) chromosome.GetGene(indexToMutate).Value).GetRunway().GetIdentification();
             var allRunways = ((Chromosome) chromosome).GetAirport().Runways.Keys.ToList();
-            
+
             allRunways.Remove(currentRunway);
 
-            var chosenRunway = ((Chromosome) chromosome).GetAirport().Runways[allRunways.ToList()[rnd.Next(allRunways.Count)]];
-            
+            var chosenRunway = ((Chromosome) chromosome).GetAirport()
+                .Runways[allRunways.ToList()[rnd.Next(allRunways.Count)]];
+
             ((Gene) chromosome.GetGene(indexToMutate).Value).MutateRunway(chosenRunway);
 
             return chromosome;
         }
+
+        public bool IsOrdered { get; }
     }
 }

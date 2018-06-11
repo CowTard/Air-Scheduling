@@ -20,45 +20,46 @@ namespace AirScheduling
         private static Thread radar;
 
         private static Airport _currentAirport;
-        
+
         public static void Main(string[] args)
         {
             read_configuration_files();
 
             while (_currentAirport.Radar.IsEmpty)
-            {}
-            
+            {
+            }
+
             var selection = new EliteSelection();
             var crossover = new Crossover(250, 250);
             var mutation = new Mutation();
             var fitness = new Fitness();
             var chromosome = new Chromosome(_currentAirport);
-            var population = new Population (500, 1000, chromosome);
+            var population = new Population(500, 1000, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
-                MutationProbability = 0.1f,
-                Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(1))
+                MutationProbability = 0.4f,
+                Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(5))
             };
 
             var initialTimeSpan = DateTime.Now;
-            
+
             Console.WriteLine("[{0}] Scheduling started", initialTimeSpan);
-            
-            
+
+
             ga.GenerationRan += (sender, e) =>
             {
                 var bestChromosome = ga.BestChromosome as Chromosome;
                 var bestFitness = bestChromosome.Fitness.Value;
 
-                Console.WriteLine(
-                    "[{2}] Generation {0,2}: {1}",
-                    ga.GenerationsNumber,
-                    bestFitness.ToString(),
-                    (DateTime.Now - initialTimeSpan).ToString()
-                );
+                if ((DateTime.Now - initialTimeSpan).Seconds == 30)
+                {
+                    Console.WriteLine("Best solution found is: " + Environment.NewLine + "{0} " + Environment.NewLine + "{1}.", ga.BestChromosome, ga.BestChromosome.Fitness);
+                    initialTimeSpan = DateTime.Now;
+                }
+
             };
-            
+
             ga.Start();
             Console.WriteLine("Best solution found is: " + Environment.NewLine + "{0} ", ga.BestChromosome);
             ga.Stop();
@@ -78,46 +79,46 @@ namespace AirScheduling
                 radar = new Thread(() => read_radar_thread("../../Data/Airport" + Airport + "/Radar.csv"));
                 var allRunways = read_runway_information("../../Data/Airport" + Airport + "/Runways.csv");
                 var landingDistances = read_landing_distances("../../Data/Airport" + Airport + "/LandingRoutes.csv");
-                
+
                 if (allRunways != null)
                     _currentAirport = new Airport(allRunways, landingDistances);
-                
-                var (runways, timeInterf) = read_runway_time_interference("../../Data/Airport" + Airport + "/Runway_landing_separation.csv");
-                
-                
+
+                var (runways, timeInterf) =
+                    read_runway_time_interference("../../Data/Airport" + Airport + "/Runway_landing_separation.csv");
+
+
                 if (runways.Length != timeInterf.Count())
                     throw new Exception("Runway time interference matrix != Runway matrix");
 
                 for (var i = 0; i < timeInterf.Count; i++)
                 {
                     var pickedFirstRunway = timeInterf[i];
-                    
+
                     for (var j = 0; j < pickedFirstRunway.Count; j++)
                     {
                         var pickingSecondRunway = pickedFirstRunway[j].Split('-');
 
-                        for (var t = 0 ; t < pickingSecondRunway.Length; t++)
-                        {       
+                        for (var t = 0; t < pickingSecondRunway.Length; t++)
+                        {
                             for (var l = 0; l < pickingSecondRunway[t].Split(':').Length; l++)
                             {
-                                _currentAirport.Runways[runways[i]].AddTimeDependecy(runways[j], 
-                                    (ConvertIndexToTypeOfAircraft(t), ConvertIndexToTypeOfAircraft(l)), 
+                                _currentAirport.Runways[runways[i]].AddTimeDependecy(runways[j],
+                                    (ConvertIndexToTypeOfAircraft(t), ConvertIndexToTypeOfAircraft(l)),
                                     int.Parse(pickingSecondRunway[t].Split(':')[l]));
                             }
                         }
                     }
                 }
-                
-                
+
+
                 radar.Start();
-                
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 return false;
             }
-            
+
 
             return true;
         }
@@ -132,7 +133,7 @@ namespace AirScheduling
             try
             {
                 var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
-            
+
                 foreach (var line in lines)
                 {
                     var splittedLine = line.Split(',');
@@ -142,7 +143,7 @@ namespace AirScheduling
                     var minimumSpeed = double.Parse(splittedLine[3]);
                     var optimalSpeed = double.Parse(splittedLine[4]);
                     var maximumSpeed = double.Parse(splittedLine[5]);
-                
+
                     var aircraftSpecification = new Aircraft(type, model, minimumSpeed, optimalSpeed, maximumSpeed);
                     _aircraftModels.Add(aircraftSpecification);
                 }
@@ -152,7 +153,7 @@ namespace AirScheduling
                 Console.WriteLine(e);
                 return false;
             }
-            
+
             return true;
         }
 
@@ -197,7 +198,7 @@ namespace AirScheduling
                 }
             }
         }
-        
+
         /// <summary>
         /// Function responsible for parsing the files Runways.csv present in the folder of the active airport
         /// </summary>
@@ -216,9 +217,8 @@ namespace AirScheduling
 
                     var identification = splittedLine[0];
                     var permissions = splittedLine[1];
-                    
-                    allRunways.Add(identification, new Airport.Runway(identification, permissions));
 
+                    allRunways.Add(identification, new Airport.Runway(identification, permissions));
                 }
 
                 return allRunways;
@@ -229,7 +229,7 @@ namespace AirScheduling
                 return null;
             }
         }
-        
+
         /// <summary>
         /// Function responsible for reading and handling the file that contains interferences times between runways
         /// </summary>
@@ -238,11 +238,11 @@ namespace AirScheduling
         private static (string[], List<List<string>>) read_runway_time_interference(string fileUrl)
         {
             var interferences = new List<List<string>>();
-            
+
             var lines = File.ReadAllLines(fileUrl).ToArray();
             string[] runways = null;
-            
-            for(var i = 0; i < lines.Length; i++)
+
+            for (var i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
 
@@ -259,7 +259,7 @@ namespace AirScheduling
 
             return (runways, interferences);
         }
-        
+
         /// <summary>
         /// Function responsible for reading and handling the file that contains landing approach's landings
         /// </summary>
@@ -269,8 +269,9 @@ namespace AirScheduling
         {
             var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
 
-            return lines.Select(line => line.Split(',')).ToDictionary(info => info[0], info => double.Parse(info[1].Trim()));
-    }
+            return lines.Select(line => line.Split(','))
+                .ToDictionary(info => info[0], info => double.Parse(info[1].Trim()));
+        }
 
         /// <summary>
         /// Convertes an index of a matrix to a specific type of aircraft
@@ -292,7 +293,5 @@ namespace AirScheduling
 
             throw new Exception();
         }
-        
-        
     }
 }

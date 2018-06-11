@@ -8,11 +8,11 @@ using GeneticSharp.Domain.Chromosomes;
 
 namespace AirScheduling.Genetics
 {
-    public class Chromosome: ChromosomeBase
+    public class Chromosome : ChromosomeBase
     {
         private readonly Airport _airport;
         public Dictionary<string, string> LastLanding { get; }
-        
+
         /// <summary>
         /// Construtor that receives an airport radar
         /// </summary>
@@ -23,7 +23,7 @@ namespace AirScheduling.Genetics
             LastLanding = new Dictionary<string, string>(airport.Runways.Count);
             GenerateAllGenes();
         }
-        
+
         /// <summary>
         /// Constructor used to create a new chromossome when crossover happens
         /// </summary>
@@ -34,8 +34,8 @@ namespace AirScheduling.Genetics
         {
             _airport = airport;
             LastLanding = new Dictionary<string, string>(airport.Runways.Count);
-            
-            for(var i = 0; i < _airport.Radar.Count; i++)
+
+            for (var i = 0; i < _airport.Radar.Count; i++)
                 ReplaceGene(i, genes[i]);
         }
 
@@ -49,7 +49,7 @@ namespace AirScheduling.Genetics
                 ReplaceGene(i, GenerateGene(i));
             }
         }
-        
+
         /// <summary>
         /// Picks the ith aircraft in radar and a random runway to generate a gene
         /// </summary>
@@ -57,10 +57,9 @@ namespace AirScheduling.Genetics
         /// <returns>A new gene</returns>
         public override GeneticSharp.Domain.Chromosomes.Gene GenerateGene(int geneIndex)
         {
-            
             var geneInformation = new Gene(_airport.Radar[_airport.Radar.Keys.ElementAt(geneIndex)],
                 _airport.GetRandomRunway(), TimeSpan.Zero);
-            
+
             return new GeneticSharp.Domain.Chromosomes.Gene(geneInformation);
         }
 
@@ -90,7 +89,7 @@ namespace AirScheduling.Genetics
         public void SwapGenes(int from, int to)
         {
             var temp = GetGene(from);
-            
+
             ReplaceGene(from, GetGene(to));
             ReplaceGene(to, temp);
         }
@@ -111,7 +110,8 @@ namespace AirScheduling.Genetics
         /// </summary>
         /// <param name="genes">IList of genes to be prepended</param>
         /// <returns>A new chromosome without repeated genes and a new head of genes</returns>
-        public IList<GeneticSharp.Domain.Chromosomes.Gene> PrependGenes(IEnumerable<GeneticSharp.Domain.Chromosomes.Gene> genes)
+        public IList<GeneticSharp.Domain.Chromosomes.Gene> PrependGenes(
+            IEnumerable<GeneticSharp.Domain.Chromosomes.Gene> genes)
         {
             var curChromosome = GetGenes().ToList();
             curChromosome.InsertRange(0, genes);
@@ -123,7 +123,7 @@ namespace AirScheduling.Genetics
                 for (var j = i + 1; j < curChromosome.Count; j++)
                 {
                     if (curChromosome[i] != curChromosome[j]) continue;
-                    
+
                     toRemove.Add(curChromosome[j]);
                     break;
                 }
@@ -136,21 +136,24 @@ namespace AirScheduling.Genetics
 
             return curChromosome;
         }
-        
-        
+
+
         /// <summary>
         /// Shows list of aircrafts and their schedule timer
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
+            
+            // sort by landing time
+            var _t = GetGenes().ToList().OrderBy(e => ((Gene) e.Value).GetArrivalTime()).ToList();
             var text = "";
 
-            foreach (var gene in GetGenes())
+            foreach (var gene in _t)
             {
                 var castedGene = (Gene) gene.Value;
 
-                text += castedGene.GetRadarAircraft() + " " + castedGene.GetRunway() + " " + 
+                text += castedGene.GetRadarAircraft() + " " + castedGene.GetRunway() + " " +
                         castedGene.GetArrivalTime() + Environment.NewLine;
             }
 
