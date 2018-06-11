@@ -104,7 +104,7 @@ namespace AirScheduling.Genetics
             if (_estimatedLandingTime.Ticks >= optTime.Ticks * 1.2)
             {
                 var delayMinutes = (optTime - _estimatedLandingTime).Minutes;
-                return 66.55 * delayMinutes * (_aircraft.GetEmergencyState() + 1);
+                return 66.55 * delayMinutes * (_aircraft.GetEmergencyState()*3 + 1);
             }
             
             //Before predicted

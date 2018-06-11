@@ -40,9 +40,9 @@ namespace AirScheduling.Genetics
 
                 var secondChild = parent2.PrependGenes(parent1.GetSliceOfChromosome(0, cutIndex));
 
-                //chr.Add(parent1);
-                //chr.Add(parent2);
-                //chr.Add(new Chromosome(parent1.GetAirport(), firstChild));
+                chr.Add(parent1);
+                chr.Add(parent2);
+                chr.Add(new Chromosome(parent1.GetAirport(), firstChild));
                 chr.Add(new Chromosome(parent2.GetAirport(), secondChild));
             }
 

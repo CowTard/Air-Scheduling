@@ -17,7 +17,7 @@ namespace AirScheduling
     {
         private const string Airport = "2";
         private static List<Aircraft> _aircraftModels = new List<Aircraft>();
-        private static Thread radar;
+        private static Thread _radar;
 
         private static Airport _currentAirport;
 
@@ -63,7 +63,7 @@ namespace AirScheduling
             ga.Start();
             Console.WriteLine("Best solution found is: " + Environment.NewLine + "{0} ", ga.BestChromosome);
             ga.Stop();
-            radar.Interrupt();
+            _radar.Interrupt();
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace AirScheduling
             try
             {
                 var aircraftTypes = read_aircraft_database("../../Data/AircraftDatabase.csv");
-                radar = new Thread(() => read_radar_thread("../../Data/Airport" + Airport + "/Radar.csv"));
+                _radar = new Thread(() => read_radar_thread("../../Data/Airport" + Airport + "/Radar.csv"));
                 var allRunways = read_runway_information("../../Data/Airport" + Airport + "/Runways.csv");
                 var landingDistances = read_landing_distances("../../Data/Airport" + Airport + "/LandingRoutes.csv");
 
@@ -111,7 +111,7 @@ namespace AirScheduling
                 }
 
 
-                radar.Start();
+                _radar.Start();
             }
             catch (Exception e)
             {
