@@ -103,7 +103,7 @@ namespace AirScheduling.Genetics
             if (_estimatedLandingTime >= optTime.Add(new TimeSpan(0, 0, 5)))
             {
                 var delayMinutes = (optTime - _estimatedLandingTime).Minutes;
-                return 66.55 * delayMinutes * (_aircraft.GetEmergencyState() * 3 + 1);
+                return 66.48 * delayMinutes * (_aircraft.GetEmergencyState() * 3 + 1);
             }
 
             //Before predicted
@@ -133,7 +133,7 @@ namespace AirScheduling.Genetics
                 var exceedingTimeInMinutes = nextFlightTime - _estimatedLandingTime.TotalMinutes -
                                              minimumInterval.TotalMinutes;
 
-                return ((150 * 37.6) / 60) * Math.Abs(exceedingTimeInMinutes);
+                return (81 + (150 * 37.6) / 60) * Math.Abs(exceedingTimeInMinutes);
             }
         }
 
