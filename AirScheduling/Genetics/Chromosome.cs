@@ -144,7 +144,6 @@ namespace AirScheduling.Genetics
         /// <returns></returns>
         public override string ToString()
         {
-            
             // sort by landing time
             var _t = GetGenes().ToList().OrderBy(e => ((Gene) e.Value).GetArrivalTime()).ToList();
             var text = "";

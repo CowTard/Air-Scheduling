@@ -91,25 +91,24 @@ namespace AirScheduling.Genetics
         /// <returns>Cost to be added</returns>
         private double CalculateArrivalFitness()
         {
-
             var optTime = _aircraft.GetDesiredLandingTime();
 
             // Optimal Interval
-            if (optTime.Ticks * 0.8 >= _estimatedLandingTime.Ticks &&
-                _estimatedLandingTime.Ticks <= optTime.Ticks * 1.2)
+            if (_estimatedLandingTime < optTime.Add(new TimeSpan(0, 0, 5)) &&
+                _estimatedLandingTime > optTime.Subtract(new TimeSpan(0, 0, 5)))
                 return 0;
 
             // Between fastest and optimal
             // 66.55 $/min for crew
-            if (_estimatedLandingTime.Ticks >= optTime.Ticks * 1.2)
+            if (_estimatedLandingTime >= optTime.Add(new TimeSpan(0, 0, 5)))
             {
                 var delayMinutes = (optTime - _estimatedLandingTime).Minutes;
-                return 66.55 * delayMinutes * (_aircraft.GetEmergencyState()*3 + 1);
+                return 66.55 * delayMinutes * (_aircraft.GetEmergencyState() * 3 + 1);
             }
-            
+
             //Before predicted
             // 21.25 $/min for pilots + 20 $/min per fuel spent by increasing speed
-            if (_estimatedLandingTime.Ticks < optTime.Ticks * 0.8)
+            if (_estimatedLandingTime <= optTime.Subtract(new TimeSpan(0, 0, 5)))
             {
                 var delayMinutes = (optTime - _estimatedLandingTime).Minutes;
                 return (21.24 + 20.0) * delayMinutes;
@@ -128,14 +127,13 @@ namespace AirScheduling.Genetics
                 return 0;
             else
             {
-
                 var nextFlightTime = _aircraft.GetNextFlightTime();
                 var minimumInterval = TimeSpan.FromMinutes(30);
-                
+
                 var exceedingTimeInMinutes = nextFlightTime - _estimatedLandingTime.TotalMinutes -
                                              minimumInterval.TotalMinutes;
 
-                return (62.55 + 37.6 / 60) * Math.Abs(exceedingTimeInMinutes);
+                return ((150 * 37.6) / 60) * Math.Abs(exceedingTimeInMinutes);
             }
         }
 

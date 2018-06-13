@@ -54,10 +54,11 @@ namespace AirScheduling
 
                 if ((DateTime.Now - initialTimeSpan).Seconds == 30)
                 {
-                    Console.WriteLine("Best solution found is: " + Environment.NewLine + "{0} " + Environment.NewLine + "{1}.", ga.BestChromosome, ga.BestChromosome.Fitness);
+                    Console.WriteLine(
+                        "Best solution found is: " + Environment.NewLine + "{0} " + Environment.NewLine + "{1}.",
+                        ga.BestChromosome, ga.BestChromosome.Fitness);
                     initialTimeSpan = DateTime.Now;
                 }
-
             };
 
             ga.Start();
