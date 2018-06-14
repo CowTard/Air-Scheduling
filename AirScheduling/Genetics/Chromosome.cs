@@ -22,6 +22,7 @@ namespace AirScheduling.Genetics
             _airport = airport;
             LastLanding = new Dictionary<string, string>(airport.Runways.Count);
             GenerateAllGenes();
+            SortChromosome();
         }
 
         /// <summary>
@@ -157,6 +158,18 @@ namespace AirScheduling.Genetics
             }
 
             return text;
+        }
+
+        /// <summary>
+        /// Sorts the chromosome by future trip time
+        /// </summary>
+        private void SortChromosome()
+        {
+
+            var genes = this.GetGenes();
+            var _ = genes.ToList().OrderBy( e => ((Gene) e.Value).Aircraft.GetNextFlightTime()).ToArray();
+
+            ReplaceGenes(0, _);
         }
     }
 }

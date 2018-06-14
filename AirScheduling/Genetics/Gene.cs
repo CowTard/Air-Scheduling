@@ -8,7 +8,7 @@ namespace AirScheduling.Genetics
     /// </summary>
     public class Gene
     {
-        private readonly AircraftRadar _aircraft;
+        public AircraftRadar Aircraft { get; }
         private TimeSpan _estimatedLandingTime;
         private Airport.Runway _runway;
 
@@ -17,7 +17,7 @@ namespace AirScheduling.Genetics
         public Gene(AircraftRadar aircraft, Airport.Runway runway, TimeSpan estimatedLandingTime)
         {
             _estimatedLandingTime = estimatedLandingTime;
-            _aircraft = aircraft;
+            Aircraft = aircraft;
             _runway = runway;
 
             Cost = 0;
@@ -69,7 +69,7 @@ namespace AirScheduling.Genetics
         /// <returns></returns>
         public AircraftRadar GetRadarAircraft()
         {
-            return _aircraft;
+            return Aircraft;
         }
 
 
@@ -91,7 +91,7 @@ namespace AirScheduling.Genetics
         /// <returns>Cost to be added</returns>
         private double CalculateArrivalFitness()
         {
-            var optTime = _aircraft.GetDesiredLandingTime();
+            var optTime = Aircraft.GetDesiredLandingTime();
 
             // Optimal Interval
             if (_estimatedLandingTime < optTime.Add(new TimeSpan(0, 0, 5)) &&
@@ -103,7 +103,7 @@ namespace AirScheduling.Genetics
             if (_estimatedLandingTime >= optTime.Add(new TimeSpan(0, 0, 5)))
             {
                 var delayMinutes = (optTime - _estimatedLandingTime).Minutes;
-                return 66.48 * delayMinutes * (_aircraft.GetEmergencyState() * 3 + 1);
+                return 66.48 * delayMinutes * (Aircraft.GetEmergencyState() * 3 + 1);
             }
 
             //Before predicted
@@ -123,11 +123,11 @@ namespace AirScheduling.Genetics
         /// <returns>Amount of cost to be added</returns>
         private double CalculateTripArrivalFitness()
         {
-            if (_aircraft.GetNextFlightTime() - _estimatedLandingTime.TotalMinutes > 30)
+            if (Aircraft.GetNextFlightTime() - _estimatedLandingTime.TotalMinutes > 30)
                 return 0;
             else
             {
-                var nextFlightTime = _aircraft.GetNextFlightTime();
+                var nextFlightTime = Aircraft.GetNextFlightTime();
                 var minimumInterval = TimeSpan.FromMinutes(30);
 
                 var exceedingTimeInMinutes = nextFlightTime - _estimatedLandingTime.TotalMinutes -
@@ -143,7 +143,7 @@ namespace AirScheduling.Genetics
         /// <returns>0, if possible : 10000 if it's not possible for this type of aircraft to land on this runway</returns>
         private double CalculateRunwayFitness()
         {
-            return _runway.PossibilityOfLanding(_aircraft.GetAircraft().GetAircraftType().ToString())
+            return _runway.PossibilityOfLanding(Aircraft.GetAircraft().GetAircraftType().ToString())
                 ? 0
                 : double.MaxValue;
         }
@@ -170,7 +170,7 @@ namespace AirScheduling.Genetics
             }
 
             var gene = ((Gene) obj);
-            return this._aircraft.GetFlightIdentification() == gene._aircraft.GetFlightIdentification();
+            return this.Aircraft.GetFlightIdentification() == gene.Aircraft.GetFlightIdentification();
         }
     }
 }
