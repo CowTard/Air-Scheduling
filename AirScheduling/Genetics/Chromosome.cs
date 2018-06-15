@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AirScheduling.Aviation;
 using GeneticSharp.Domain.Chromosomes;
@@ -147,16 +148,18 @@ namespace AirScheduling.Genetics
         {
             // sort by landing time
             var _t = GetGenes().ToList().OrderBy(e => ((Gene) e.Value).GetArrivalTime()).ToList();
-            var text = "";
 
-            foreach (var gene in _t)
+            var average_cost = 0.0;
+            var average_delay = 0.0;
+
+            foreach (var g in GetGenes())
             {
-                var castedGene = (Gene) gene.Value;
-
-                text += castedGene.GetRadarAircraft() + " " + castedGene.GetRunway() + " " +
-                        castedGene.GetArrivalTime() + Environment.NewLine;
+                average_cost += ((Gene) g.Value).Cost;
+                average_delay += (((Gene) g.Value).Aircraft.GetDesiredLandingTime() - ((Gene) g.Value).GetArrivalTime()).Duration().Ticks;
             }
 
+            var text = String.Format("{0}, {1}", (average_cost / 8).ToString("C", CultureInfo.CurrentCulture), new TimeSpan((long)average_delay / 8));
+            
             return text;
         }
 

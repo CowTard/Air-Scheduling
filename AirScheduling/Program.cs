@@ -10,6 +10,8 @@ using GeneticSharp.Domain.Populations;
 using GeneticSharp.Domain.Reinsertions;
 using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
+using GeneticSharp.Infrastructure.Framework.Threading;
+using GeneticSharp.Infrastructure.Threading;
 
 namespace AirScheduling
 {
@@ -25,21 +27,26 @@ namespace AirScheduling
         {
             read_configuration_files();
 
+            
+            
             while (_currentAirport.Radar.IsEmpty)
             {
             }
 
             var selection = new EliteSelection();
-            var crossover = new Crossover(250, 250);
+            var crossover = new Crossover(2, 2);
             var mutation = new Mutation();
             var fitness = new Fitness();
             var chromosome = new Chromosome(_currentAirport);
-            var population = new Population(500, 1000, chromosome);
+            var population = new Population(250, 500, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
-                MutationProbability = 0.4f,
-                Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(5))
+                CrossoverProbability = 0.9f, 
+                MutationProbability = 0.5f,
+                Reinsertion = new ElitistReinsertion(),
+                Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(5)),
+                //TaskExecutor = new SmartThreadPoolTaskExecutor()
             };
 
             var initialTimeSpan = DateTime.Now;
@@ -52,15 +59,16 @@ namespace AirScheduling
                 var bestChromosome = ga.BestChromosome as Chromosome;
                 var bestFitness = bestChromosome.Fitness.Value;
 
-                if ((DateTime.Now - initialTimeSpan).Seconds == 30)
+                if ((DateTime.Now - initialTimeSpan).Seconds == 1)
                 {
                     Console.WriteLine(
-                        "Best solution found is: " + Environment.NewLine + "{0} " + Environment.NewLine + "{1}.",
+                        "Best solution found is: " + Environment.NewLine + "{0}, {1}.",
                         ga.BestChromosome, ga.BestChromosome.Fitness);
                     initialTimeSpan = DateTime.Now;
                 }
             };
-
+            
+            
             ga.Start();
             Console.WriteLine("Best solution found is: " + Environment.NewLine + "{0} ", ga.BestChromosome);
             ga.Stop();
@@ -165,11 +173,29 @@ namespace AirScheduling
         /// <returns>Void</returns>
         private static void read_radar_thread(string fileUrl)
         {
+            
             while (true)
             {
                 try
                 {
-                    var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
+
+                    for (int i = 0; i < 8; i++)
+                    {
+                        var flighId = i;
+                        var distanceToAirport = i * 1000;
+                        var aircrafId = (new Random()).Next(6);
+                        var urgency = (new Random()).Next(1) == 1 ? true : false;
+                        var time = TimeSpan.FromMinutes((new Random()).Next(25));
+                        var timeNextFlight = time.TotalMinutes + 30 + (new Random()).Next(10);
+                        
+                        var aicraftInRadar = new AircraftRadar("" + flighId, "" + distanceToAirport,
+                            _aircraftModels[aircrafId - 1],
+                            timeNextFlight, urgency, time);
+                        
+                        _currentAirport.Radar.TryAdd("" + flighId, aicraftInRadar);
+                    }
+                    
+                    /*var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
 
                     foreach (var line in lines)
                     {
@@ -191,6 +217,7 @@ namespace AirScheduling
 
                         _currentAirport.Radar.TryAdd(flighId, aicraftInRadar);
                     }
+                    */
                 }
                 catch (Exception e)
                 {

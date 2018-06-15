@@ -58,20 +58,22 @@ namespace AirScheduling.Genetics
         /// <returns></returns>
         private IChromosome PerformeRunwayMutation(IChromosome chromosome)
         {
-            var rnd = new Random();
-            var indexToMutate = rnd.Next(chromosome.Length);
+            var chr = (Chromosome) chromosome;
 
-            var currentRunway = ((Gene) chromosome.GetGene(indexToMutate).Value).GetRunway().GetIdentification();
-            var allRunways = ((Chromosome) chromosome).GetAirport().Runways.Keys.ToList();
+            var rnd = new Random();
+            var indexToMutate = rnd.Next(chr.Length);
+
+            var currentRunway = ((Gene) chr.GetGene(indexToMutate).Value).GetRunway().GetIdentification();
+            var allRunways = ((Chromosome) chr).GetAirport().Runways.Keys.ToList();
 
             allRunways.Remove(currentRunway);
 
-            var chosenRunway = ((Chromosome) chromosome).GetAirport()
+            var chosenRunway = ((Chromosome) chr).GetAirport()
                 .Runways[allRunways.ToList()[rnd.Next(allRunways.Count)]];
 
-            ((Gene) chromosome.GetGene(indexToMutate).Value).MutateRunway(chosenRunway);
+            ((Gene) chr.GetGene(indexToMutate).Value).MutateRunway(chosenRunway);
 
-            return chromosome;
+            return chr;
         }
 
         public bool IsOrdered { get; }

@@ -24,29 +24,19 @@ namespace AirScheduling.Genetics
         {
             var chr = new List<IChromosome>();
 
-            for (var i = 0; i < parents.Count; i += 2)
-            {
-                // fist parent
-                var parent1 = (Chromosome) parents[i];
+            // fist parent
+            var parent1 = (Chromosome) parents[0];
 
-                // second parent
-                var parent2 = (Chromosome) parents[i + 1];
+            // second parent
+            var parent2 = (Chromosome) parents[1];
 
-                // Choose cut index
-                var cutIndex = (new Random()).Next(0, parent1.Length);
+            // Choose cut index
+            var cutIndex = (new Random()).Next(0, parent1.Length);
 
-                // First Child
-                var firstChild = parent1.PrependGenes(parent2.GetSliceOfChromosome(0, cutIndex));
+            var firstChild = (new Chromosome(parent1.GetAirport(), parent1.PrependGenes(parent2.GetSliceOfChromosome(0, cutIndex))));
+            var secondChild =new Chromosome(parent2.GetAirport(), parent2.PrependGenes(parent1.GetSliceOfChromosome(0, cutIndex)));
 
-                var secondChild = parent2.PrependGenes(parent1.GetSliceOfChromosome(0, cutIndex));
-
-                chr.Add(parent1);
-                chr.Add(parent2);
-                chr.Add(new Chromosome(parent1.GetAirport(), firstChild));
-                chr.Add(new Chromosome(parent2.GetAirport(), secondChild));
-            }
-
-            return chr;
+            return new List<IChromosome>() {firstChild, secondChild};
         }
     }
 }

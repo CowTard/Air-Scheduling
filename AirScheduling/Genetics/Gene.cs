@@ -41,8 +41,6 @@ namespace AirScheduling.Genetics
             _estimatedLandingTime = time;
 
             CalculateFitnessFunction();
-
-            return;
         }
 
         /// <summary>
@@ -81,8 +79,6 @@ namespace AirScheduling.Genetics
             IncrementCost(CalculateArrivalFitness());
             IncrementCost(CalculateTripArrivalFitness());
             IncrementCost(CalculateRunwayFitness());
-
-            Cost = 1 / (Cost + 1);
         }
 
         /// <summary>
