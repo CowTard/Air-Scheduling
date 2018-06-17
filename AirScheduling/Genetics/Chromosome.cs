@@ -17,12 +17,14 @@ namespace AirScheduling.Genetics
         /// Construtor that receives an airport radar
         /// </summary>
         /// <param name="airport"></param>
-        public Chromosome(Airport airport) : base(airport.Radar.Count)
+        public Chromosome(Airport airport, bool fifo = false) : base(airport.Radar.Count)
         {
             _airport = airport;
             LastLanding = new Dictionary<string, string>(airport.Runways.Count);
             GenerateAllGenes();
-            SortChromosome();
+            
+            if (fifo)
+                SortChromosome();
             Fitness = null;
         }
 
@@ -175,13 +177,11 @@ namespace AirScheduling.Genetics
 
                 averageDelay += desiredT.Subtract(landingT);
             }
-            
-            
-            
+
             var text =
-                $"{(averageCost / 8).ToString("C", CultureInfo.CurrentCulture)}, " +
+                $"{((Gene) t[t.Count - 1].Value).GetArrivalTime()}, " +
                 $"{new TimeSpan(averageDelay.Ticks / 8)}, " +
-                $"{this.Fitness}";
+                $"{(averageCost / 8).ToString("C", CultureInfo.CurrentCulture)}";
             
             return text;
         }

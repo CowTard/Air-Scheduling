@@ -9,7 +9,7 @@ namespace AirScheduling.Aviation
     {
         public Dictionary<string, Runway> Runways { get; }
         private Dictionary<string, double> LandingTimes { get; }
-        public ConcurrentDictionary<string, AircraftRadar> Radar { get; }
+        public ConcurrentDictionary<string, AircraftRadar> Radar { get; set; }
         public bool Ready;
 
         /// <summary>

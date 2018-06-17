@@ -56,8 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aviation\Aircraft.cs" />
-    <Compile Include="Aviation\Airport.cs" />
     <Compile Include="Genetics\Chromosome.cs" />
     <Compile Include="Genetics\Crossover.cs" />
     <Compile Include="Genetics\Fitness.cs" />
@@ -67,6 +65,9 @@
     <Compile Include="Genetics\Selection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\Aviation\Aircraft.cs" />
+    <Compile Include="Utils\Aviation\Airport.cs" />
+    <Compile Include="Utils\FileWriting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -81,9 +82,6 @@
     <Content Include="Data\Airport2\Radar.csv" />
     <Content Include="Data\Airport2\Runways.csv" />
     <Content Include="Data\Airport2\Runway_landing_separation.csv" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Output" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
