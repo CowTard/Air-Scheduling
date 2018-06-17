@@ -14,9 +14,9 @@ namespace AirScheduling.Genetics
             _chromosome = (Chromosome) chromosome;
             CalculateArrivalTimeAndCostAsssociated();
 
-            var cost = _chromosome.GetGenes().Sum(ge => ((Gene) ge.Value).Cost);
+            var cost = (int) _chromosome.GetGenes().Sum(ge => ((Gene) ge.Value).Cost);
 
-            return 1 / (cost + 1);
+            return 1 / (cost + 1.0);
         }
 
         /// <summary>
@@ -52,6 +52,7 @@ namespace AirScheduling.Genetics
                     timeOfFirstLanding = TimeSpan.Zero; //TimeSpan.FromHours( distanceToCover / useSpeed);
 
                     arrayOfArrivals = Enumerable.Repeat(timeOfFirstLanding, arrayOfArrivals.Length).ToArray();
+                    
                     ((Gene) _chromosome.GetGene(i).Value).SetArrivalTime(timeOfFirstLanding);
                 }
                 else

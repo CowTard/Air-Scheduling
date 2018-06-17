@@ -76,6 +76,7 @@ namespace AirScheduling.Genetics
         /// </summary>
         private void CalculateFitnessFunction()
         {
+            Cost = 0;
             IncrementCost(CalculateArrivalFitness());
             IncrementCost(CalculateTripArrivalFitness());
             IncrementCost(CalculateRunwayFitness());
@@ -121,16 +122,14 @@ namespace AirScheduling.Genetics
         {
             if (Aircraft.GetNextFlightTime() - _estimatedLandingTime.TotalMinutes > 30)
                 return 0;
-            else
-            {
-                var nextFlightTime = Aircraft.GetNextFlightTime();
-                var minimumInterval = TimeSpan.FromMinutes(30);
+            
+            var nextFlightTime = Aircraft.GetNextFlightTime();
+            var minimumInterval = TimeSpan.FromMinutes(30);
 
-                var exceedingTimeInMinutes = nextFlightTime - _estimatedLandingTime.TotalMinutes -
-                                             minimumInterval.TotalMinutes;
+            var exceedingTimeInMinutes = nextFlightTime - _estimatedLandingTime.TotalMinutes -
+                                         minimumInterval.TotalMinutes;
 
-                return (81 + (150 * 37.6) / 60) * Math.Abs(exceedingTimeInMinutes);
-            }
+            return (81 + (150 * 37.6) / 60) * Math.Abs(exceedingTimeInMinutes);
         }
 
         /// <summary>
@@ -166,7 +165,8 @@ namespace AirScheduling.Genetics
             }
 
             var gene = ((Gene) obj);
-            return this.Aircraft.GetFlightIdentification() == gene.Aircraft.GetFlightIdentification();
+            return Aircraft.GetFlightIdentification() == gene.Aircraft.GetFlightIdentification() &&
+                   Cost == ((Gene) obj).Cost;
         }
     }
 }

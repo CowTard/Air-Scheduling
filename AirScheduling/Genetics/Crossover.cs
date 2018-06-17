@@ -7,10 +7,6 @@ namespace AirScheduling.Genetics
 {
     public class Crossover : CrossoverBase
     {
-        public Crossover() : base(2, 2)
-        {
-        }
-
         public Crossover(int parentsNumber, int childrenNumber) : base(parentsNumber, childrenNumber)
         {
         }
@@ -22,7 +18,6 @@ namespace AirScheduling.Genetics
 
         protected override IList<IChromosome> PerformCross(IList<IChromosome> parents)
         {
-            var chr = new List<IChromosome>();
 
             // fist parent
             var parent1 = (Chromosome) parents[0];

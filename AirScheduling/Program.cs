@@ -27,8 +27,6 @@ namespace AirScheduling
         {
             read_configuration_files();
 
-            
-            
             while (_currentAirport.Radar.IsEmpty)
             {
             }
@@ -42,11 +40,9 @@ namespace AirScheduling
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
-                CrossoverProbability = 0.9f, 
-                MutationProbability = 0.5f,
+                MutationProbability = 0.6f,
                 Reinsertion = new ElitistReinsertion(),
                 Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(5)),
-                //TaskExecutor = new SmartThreadPoolTaskExecutor()
             };
 
             var initialTimeSpan = DateTime.Now;
@@ -54,17 +50,21 @@ namespace AirScheduling
             Console.WriteLine("[{0}] Scheduling started", initialTimeSpan);
 
 
+            Chromosome lastBest = null;
             ga.GenerationRan += (sender, e) =>
             {
                 var bestChromosome = ga.BestChromosome as Chromosome;
-                var bestFitness = bestChromosome.Fitness.Value;
 
-                if ((DateTime.Now - initialTimeSpan).Seconds == 1)
+                if (lastBest == null)
+                    lastBest = bestChromosome;
+
+                // lastBest != bestChromosome && 
+                if ( !(lastBest.Equals(bestChromosome)) && (DateTime.Now - initialTimeSpan).Seconds == 0)
                 {
-                    Console.WriteLine(
-                        "Best solution found is: " + Environment.NewLine + "{0}, {1}.",
-                        ga.BestChromosome, ga.BestChromosome.Fitness);
+                    Console.WriteLine("{0}", ga.BestChromosome);
+                    
                     initialTimeSpan = DateTime.Now;
+                    lastBest = bestChromosome;
                 }
             };
             
