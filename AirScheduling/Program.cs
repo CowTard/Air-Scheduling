@@ -183,7 +183,7 @@ namespace AirScheduling
                     {
                         var flighId = i;
                         var distanceToAirport = i * 1000;
-                        var aircrafId = (new Random()).Next(6);
+                        var aircrafId = (new Random()).Next(1, 7);
                         var urgency = (new Random()).Next(1) == 1 ? true : false;
                         var time = TimeSpan.FromMinutes((new Random()).Next(25));
                         var timeNextFlight = time.TotalMinutes + 30 + (new Random()).Next(10);
