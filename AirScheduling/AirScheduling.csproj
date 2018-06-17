@@ -63,6 +63,8 @@
     <Compile Include="Genetics\Fitness.cs" />
     <Compile Include="Genetics\Gene.cs" />
     <Compile Include="Genetics\Mutation.cs" />
+    <Compile Include="Genetics\CustomReinsertion.cs" />
+    <Compile Include="Genetics\Selection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

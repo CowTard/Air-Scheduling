@@ -23,6 +23,7 @@ namespace AirScheduling.Genetics
             LastLanding = new Dictionary<string, string>(airport.Runways.Count);
             GenerateAllGenes();
             SortChromosome();
+            Fitness = null;
         }
 
         /// <summary>
@@ -40,6 +41,8 @@ namespace AirScheduling.Genetics
             {
                 for (var i = 0; i < _airport.Radar.Count; i++)
                     ReplaceGene(i, genes[i]);
+
+                Fitness = null;
             }
             catch (Exception e)
             {
@@ -172,10 +175,13 @@ namespace AirScheduling.Genetics
 
                 averageDelay += desiredT.Subtract(landingT);
             }
+            
+            
+            
             var text =
                 $"{(averageCost / 8).ToString("C", CultureInfo.CurrentCulture)}, " +
                 $"{new TimeSpan(averageDelay.Ticks / 8)}, " +
-                $"{Fitness}";
+                $"{this.Fitness}";
             
             return text;
         }

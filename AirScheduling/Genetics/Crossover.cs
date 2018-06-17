@@ -11,11 +11,6 @@ namespace AirScheduling.Genetics
         {
         }
 
-        public Crossover(int parentsNumber, int childrenNumber, int minChromosomeLength) : base(parentsNumber,
-            childrenNumber, minChromosomeLength)
-        {
-        }
-
         protected override IList<IChromosome> PerformCross(IList<IChromosome> parents)
         {
 

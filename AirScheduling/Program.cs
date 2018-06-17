@@ -27,22 +27,23 @@ namespace AirScheduling
         {
             read_configuration_files();
 
-            while (_currentAirport.Radar.IsEmpty)
+            while (!_currentAirport.Ready)
             {
             }
 
-            var selection = new EliteSelection();
+            var selection = new Selection();
             var crossover = new Crossover(2, 2);
             var mutation = new Mutation();
             var fitness = new Fitness();
             var chromosome = new Chromosome(_currentAirport);
-            var population = new Population(250, 500, chromosome);
+            var population = new Population(25, 50, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
-                MutationProbability = 0.6f,
-                Reinsertion = new ElitistReinsertion(),
+                CrossoverProbability = 1f,
+                MutationProbability = 0.7f,
                 Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(5)),
+                Reinsertion = new CustomReinsertion(),
             };
 
             var initialTimeSpan = DateTime.Now;
@@ -58,17 +59,16 @@ namespace AirScheduling
                 if (lastBest == null)
                     lastBest = bestChromosome;
 
-                // lastBest != bestChromosome && 
-                if ( !(lastBest.Equals(bestChromosome)) && (DateTime.Now - initialTimeSpan).Seconds == 0)
+                if (!(lastBest.Equals(bestChromosome)) && (DateTime.Now - initialTimeSpan).Seconds == 0)
                 {
                     Console.WriteLine("{0}", ga.BestChromosome);
-                    
+
                     initialTimeSpan = DateTime.Now;
                     lastBest = bestChromosome;
                 }
             };
-            
-            
+
+
             ga.Start();
             Console.WriteLine("Best solution found is: " + Environment.NewLine + "{0} ", ga.BestChromosome);
             ga.Stop();
@@ -173,12 +173,10 @@ namespace AirScheduling
         /// <returns>Void</returns>
         private static void read_radar_thread(string fileUrl)
         {
-            
             while (true)
             {
                 try
                 {
-
                     for (int i = 0; i < 8; i++)
                     {
                         var flighId = i;
@@ -187,14 +185,15 @@ namespace AirScheduling
                         var urgency = (new Random()).Next(1) == 1 ? true : false;
                         var time = TimeSpan.FromMinutes((new Random()).Next(25));
                         var timeNextFlight = time.TotalMinutes + 30 + (new Random()).Next(10);
-                        
+
                         var aicraftInRadar = new AircraftRadar("" + flighId, "" + distanceToAirport,
                             _aircraftModels[aircrafId - 1],
                             timeNextFlight, urgency, time);
-                        
+
                         _currentAirport.Radar.TryAdd("" + flighId, aicraftInRadar);
                     }
-                    
+
+                    _currentAirport.Ready = true;
                     /*var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
 
                     foreach (var line in lines)

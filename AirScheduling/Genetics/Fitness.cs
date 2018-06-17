@@ -16,7 +16,7 @@ namespace AirScheduling.Genetics
 
             var cost = (int) _chromosome.GetGenes().Sum(ge => ((Gene) ge.Value).Cost);
 
-            return 1 / (cost + 1.0);
+            return cost;
         }
 
         /// <summary>

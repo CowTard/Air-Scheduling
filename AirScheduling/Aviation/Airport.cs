@@ -8,8 +8,9 @@ namespace AirScheduling.Aviation
     public class Airport
     {
         public Dictionary<string, Runway> Runways { get; }
-        public Dictionary<string, double> LandingTimes { get; }
+        private Dictionary<string, double> LandingTimes { get; }
         public ConcurrentDictionary<string, AircraftRadar> Radar { get; }
+        public bool Ready;
 
         /// <summary>
         /// Default constructor
@@ -20,7 +21,7 @@ namespace AirScheduling.Aviation
             Runways = runways;
             LandingTimes = landingTimes;
             Radar = new ConcurrentDictionary<string, AircraftRadar>();
-            ;
+            Ready = false;
         }
 
         /// <summary>
