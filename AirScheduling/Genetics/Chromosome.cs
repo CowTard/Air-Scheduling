@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using AirScheduling.Aviation;
@@ -18,12 +17,15 @@ namespace AirScheduling.Genetics
         /// Construtor that receives an airport radar
         /// </summary>
         /// <param name="airport"></param>
-        public Chromosome(Airport airport) : base(airport.Radar.Count)
+        public Chromosome(Airport airport, bool fifo = false) : base(airport.Radar.Count)
         {
             _airport = airport;
             LastLanding = new Dictionary<string, string>(airport.Runways.Count);
             GenerateAllGenes();
-            SortChromosome();
+            
+            if (!fifo)
+                SortChromosome();
+            Fitness = null;
         }
 
         /// <summary>
@@ -37,8 +39,18 @@ namespace AirScheduling.Genetics
             _airport = airport;
             LastLanding = new Dictionary<string, string>(airport.Runways.Count);
 
-            for (var i = 0; i < _airport.Radar.Count; i++)
-                ReplaceGene(i, genes[i]);
+            try
+            {
+                for (var i = 0; i < _airport.Radar.Count; i++)
+                    ReplaceGene(i, genes[i]);
+
+                Fitness = null;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("OUCGH");
+                throw;
+            }
         }
 
         /// <summary>
@@ -71,7 +83,7 @@ namespace AirScheduling.Genetics
         /// <returns></returns>
         public Airport GetAirport()
         {
-            return this._airport;
+            return _airport;
         }
 
         /// <summary>
@@ -116,18 +128,18 @@ namespace AirScheduling.Genetics
             IEnumerable<GeneticSharp.Domain.Chromosomes.Gene> genes)
         {
             var curChromosome = GetGenes().ToList();
-            curChromosome.InsertRange(0, genes);
-
             var toRemove = new List<GeneticSharp.Domain.Chromosomes.Gene>();
 
-            for (var i = 0; i < curChromosome.Count - 1; i++)
+            foreach (var g in genes)
             {
-                for (var j = i + 1; j < curChromosome.Count; j++)
+                ((Gene) g.Value).Cost = 0;
+                foreach (var origGene in curChromosome)
                 {
-                    if (curChromosome[i] != curChromosome[j]) continue;
-
-                    toRemove.Add(curChromosome[j]);
-                    break;
+                    if ( ((Gene) g.Value).GetRadarAircraft().GetFlightIdentification() == ((Gene) origGene.Value).GetRadarAircraft().GetFlightIdentification())
+                    {
+                        toRemove.Add(origGene);
+                        break;
+                    }
                 }
             }
 
@@ -135,7 +147,11 @@ namespace AirScheduling.Genetics
             {
                 curChromosome.Remove(geneToBeRemoved);
             }
+            
+            
+            curChromosome.InsertRange(0, genes);
 
+            Debug.Assert(curChromosome.Count == 8);
             return curChromosome;
         }
 
@@ -147,18 +163,25 @@ namespace AirScheduling.Genetics
         public override string ToString()
         {
             // sort by landing time
-            var _t = GetGenes().ToList().OrderBy(e => ((Gene) e.Value).GetArrivalTime()).ToList();
+            var t = GetGenes().ToList().OrderBy(e => ((Gene) e.Value).GetArrivalTime()).ToList();
 
-            var average_cost = 0.0;
-            var average_delay = 0.0;
+            var averageCost = 0.0;
+            var averageDelay = TimeSpan.Zero;
 
-            foreach (var g in GetGenes())
+            foreach (var g in t)
             {
-                average_cost += ((Gene) g.Value).Cost;
-                average_delay += (((Gene) g.Value).Aircraft.GetDesiredLandingTime() - ((Gene) g.Value).GetArrivalTime()).Duration().Ticks;
+                averageCost += ((Gene) g.Value).Cost;
+
+                var landingT = ((Gene) g.Value).GetArrivalTime();
+                var desiredT = ((Gene) g.Value).Aircraft.GetDesiredLandingTime();
+
+                averageDelay += desiredT.Subtract(landingT).Duration();
             }
 
-            var text = String.Format("{0}, {1}", (average_cost / 8).ToString("C", CultureInfo.CurrentCulture), new TimeSpan((long)average_delay / 8));
+            var text =
+                $"{((Gene) t[t.Count - 1].Value).GetArrivalTime()}, " +
+                $"{new TimeSpan(averageDelay.Ticks / 8)}, " +
+                $"{(averageCost / 8).ToString("C", CultureInfo.CurrentCulture)}";
             
             return text;
         }
@@ -169,10 +192,22 @@ namespace AirScheduling.Genetics
         private void SortChromosome()
         {
 
-            var genes = this.GetGenes();
+            var genes = GetGenes();
+            //var _ = genes.ToList().OrderBy( e => ((Gene) e.Value).Aircraft.GetNextFlightTime).ToArray();
             var _ = genes.ToList().OrderBy( e => ((Gene) e.Value).Aircraft.GetNextFlightTime()).ToArray();
-
             ReplaceGenes(0, _);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var obc = (Chromosome) obj;
+
+            return obc != null && (obc._airport == _airport && obc.LastLanding == LastLanding && obc.GetGenes() == GetGenes());
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

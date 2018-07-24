@@ -1,17 +1,15 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using AirScheduling.Aviation;
 using AirScheduling.Genetics;
+using AirScheduling.Utils;
 using GeneticSharp.Domain;
 using GeneticSharp.Domain.Populations;
-using GeneticSharp.Domain.Reinsertions;
-using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
-using GeneticSharp.Infrastructure.Framework.Threading;
-using GeneticSharp.Infrastructure.Threading;
 
 namespace AirScheduling
 {
@@ -20,59 +18,71 @@ namespace AirScheduling
         private const string Airport = "2";
         private static List<Aircraft> _aircraftModels = new List<Aircraft>();
         private static Thread _radar;
-
+        private static Random rnd;
         private static Airport _currentAirport;
 
         public static void Main(string[] args)
         {
+            FileWriting.CreateTestFile("../../Data/Test.csv", "ID, Type, Minimum Time, Average Delay, Average Cost");
+            
+            
+            rnd = new Random();
+
             read_configuration_files();
-
-            
-            
-            while (_currentAirport.Radar.IsEmpty)
+            if (_currentAirport.Radar.Count == 0)
             {
+                _radar = new Thread(() => read_radar_thread(""));
+                _radar.Start();
             }
+                
+            while (!_currentAirport.Ready)
+            {}
 
-            var selection = new EliteSelection();
+            var selection = new Selection();
             var crossover = new Crossover(2, 2);
             var mutation = new Mutation();
             var fitness = new Fitness();
             var chromosome = new Chromosome(_currentAirport);
             var population = new Population(250, 500, chromosome);
 
+            // FIFO
+            var fifoChr = new Chromosome(_currentAirport, true);
+            fitness.Evaluate(fifoChr);
+
+
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
-                CrossoverProbability = 0.9f, 
-                MutationProbability = 0.5f,
-                Reinsertion = new ElitistReinsertion(),
-                Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(5)),
-                //TaskExecutor = new SmartThreadPoolTaskExecutor()
+                CrossoverProbability = 0.5f,
+                MutationProbability = 0.7f,
+                Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(0.1)),
+                Reinsertion = new CustomReinsertion(),
             };
 
             var initialTimeSpan = DateTime.Now;
-
             Console.WriteLine("[{0}] Scheduling started", initialTimeSpan);
 
 
+            Chromosome lastBest = null;
             ga.GenerationRan += (sender, e) =>
             {
                 var bestChromosome = ga.BestChromosome as Chromosome;
-                var bestFitness = bestChromosome.Fitness.Value;
 
-                if ((DateTime.Now - initialTimeSpan).Seconds == 1)
-                {
-                    Console.WriteLine(
-                        "Best solution found is: " + Environment.NewLine + "{0}, {1}.",
-                        ga.BestChromosome, ga.BestChromosome.Fitness);
-                    initialTimeSpan = DateTime.Now;
-                }
+                if (lastBest == null)
+                    lastBest = bestChromosome;
             };
-            
-            
+
+
             ga.Start();
-            Console.WriteLine("Best solution found is: " + Environment.NewLine + "{0} ", ga.BestChromosome);
+            Console.WriteLine("[{0}] New Round !", DateTime.Now);
+                
+                
+            FileWriting.WriteToFile("../../Data/Test.csv", "FIFO, " + fifoChr.ToString());
+            FileWriting.WriteToFile("../../Data/Test.csv", "--GA, " + ga.BestChromosome.ToString());
             ga.Stop();
             _radar.Interrupt();
+            _currentAirport.Ready = false;
+            _currentAirport.Radar.Clear();
+            
         }
 
         /// <summary>
@@ -173,58 +183,58 @@ namespace AirScheduling
         /// <returns>Void</returns>
         private static void read_radar_thread(string fileUrl)
         {
-            
-            while (true)
+            //while (true)
+            //{
+            try
             {
-                try
+                _currentAirport.Radar.Clear();
+                for (int i = 0; i < 8; i++)
                 {
+                    var flighId = i;
+                    var distanceToAirport = i * 1000;
+                    var aircrafId = rnd.Next(1, 7);
+                    var urgency = rnd.Next(2) == 1 ? true : false;
+                    var time = urgency == true? TimeSpan.Zero : TimeSpan.FromMinutes(rnd.Next(11));
+                    var timeNextFlight = time.TotalMinutes + 30 + rnd.Next(10);
 
-                    for (int i = 0; i < 8; i++)
-                    {
-                        var flighId = i;
-                        var distanceToAirport = i * 1000;
-                        var aircrafId = (new Random()).Next(6);
-                        var urgency = (new Random()).Next(1) == 1 ? true : false;
-                        var time = TimeSpan.FromMinutes((new Random()).Next(25));
-                        var timeNextFlight = time.TotalMinutes + 30 + (new Random()).Next(10);
-                        
-                        var aicraftInRadar = new AircraftRadar("" + flighId, "" + distanceToAirport,
-                            _aircraftModels[aircrafId - 1],
-                            timeNextFlight, urgency, time);
-                        
-                        _currentAirport.Radar.TryAdd("" + flighId, aicraftInRadar);
-                    }
-                    
-                    /*var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
+                    var aicraftInRadar = new AircraftRadar("" + flighId, "" + distanceToAirport,
+                        _aircraftModels[aircrafId - 1],
+                        timeNextFlight, urgency, time);
 
-                    foreach (var line in lines)
-                    {
-                        var splittedLine = line.Split(',');
-
-                        var flighId = splittedLine[0];
-                        var distanceToAirport = splittedLine[1];
-                        var aircrafId = int.Parse(splittedLine[2]);
-                        var urgency = bool.Parse(splittedLine[3]);
-                        var timeNextFlight = double.Parse(splittedLine[4]);
-                        var time = TimeSpan.FromMinutes(double.Parse(splittedLine[5]));
-
-                        if (_currentAirport.Radar.ContainsKey(flighId))
-                            continue;
-
-                        var aicraftInRadar = new AircraftRadar(flighId, distanceToAirport,
-                            _aircraftModels[aircrafId - 1],
-                            timeNextFlight, urgency, time);
-
-                        _currentAirport.Radar.TryAdd(flighId, aicraftInRadar);
-                    }
-                    */
+                    var wasAdded = _currentAirport.Radar.TryAdd("" + flighId, aicraftInRadar);
                 }
-                catch (Exception e)
+
+                _currentAirport.Ready = true;
+                /*var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
+
+                foreach (var line in lines)
                 {
-                    Console.WriteLine(e);
-                    throw;
+                    var splittedLine = line.Split(',');
+
+                    var flighId = splittedLine[0];
+                    var distanceToAirport = splittedLine[1];
+                    var aircrafId = int.Parse(splittedLine[2]);
+                    var urgency = bool.Parse(splittedLine[3]);
+                    var timeNextFlight = double.Parse(splittedLine[4]);
+                    var time = TimeSpan.FromMinutes(double.Parse(splittedLine[5]));
+
+                    if (_currentAirport.Radar.ContainsKey(flighId))
+                        continue;
+
+                    var aicraftInRadar = new AircraftRadar(flighId, distanceToAirport,
+                        _aircraftModels[aircrafId - 1],
+                        timeNextFlight, urgency, time);
+
+                    _currentAirport.Radar.TryAdd(flighId, aicraftInRadar);
                 }
+                */
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            //}
         }
 
         /// <summary>

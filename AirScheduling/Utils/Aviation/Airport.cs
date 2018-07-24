@@ -7,9 +7,11 @@ namespace AirScheduling.Aviation
 {
     public class Airport
     {
+        private Random rnd;
         public Dictionary<string, Runway> Runways { get; }
-        public Dictionary<string, double> LandingTimes { get; }
-        public ConcurrentDictionary<string, AircraftRadar> Radar { get; }
+        private Dictionary<string, double> LandingTimes { get; }
+        public ConcurrentDictionary<string, AircraftRadar> Radar { get; set; }
+        public bool Ready;
 
         /// <summary>
         /// Default constructor
@@ -20,7 +22,9 @@ namespace AirScheduling.Aviation
             Runways = runways;
             LandingTimes = landingTimes;
             Radar = new ConcurrentDictionary<string, AircraftRadar>();
-            ;
+            Ready = false;
+            
+            rnd = new Random();
         }
 
         /// <summary>
@@ -29,8 +33,9 @@ namespace AirScheduling.Aviation
         /// <returns>Available runway</returns>
         public Runway GetRandomRunway()
         {
-            var rand = new Random();
-            return Runways.ElementAt(rand.Next(Runways.Count)).Value;
+            var vL = rnd.Next(Runways.Count);
+
+            return Runways.ElementAt(vL).Value;
         }
 
         /// <summary>

@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AirScheduling</RootNamespace>
     <AssemblyName>AirScheduling</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,20 +32,23 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>AirScheduling.AirScheduling</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GeneticSharp.Domain, Version=1.1.6601.1437, Culture=neutral, PublicKeyToken=d63d2a65268366c6">
+    <Reference Include="GeneticSharp.Domain, Version=1.1.6601.1437, Culture=neutral, PublicKeyToken=d63d2a65268366c6, processorArchitecture=MSIL">
       <HintPath>..\packages\GeneticSharp.1.2.0\lib\net35\GeneticSharp.Domain.dll</HintPath>
     </Reference>
-    <Reference Include="GeneticSharp.Extensions, Version=1.1.6601.1440, Culture=neutral, PublicKeyToken=f24c5e2578f0ecff">
+    <Reference Include="GeneticSharp.Extensions, Version=1.1.6601.1440, Culture=neutral, PublicKeyToken=f24c5e2578f0ecff, processorArchitecture=MSIL">
       <HintPath>..\packages\GeneticSharp.1.2.0\lib\net35\GeneticSharp.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="GeneticSharp.Infrastructure.Framework, Version=1.1.6601.1437, Culture=neutral, PublicKeyToken=f24c5e2578f0ecff">
+    <Reference Include="GeneticSharp.Infrastructure.Framework, Version=1.1.6601.1437, Culture=neutral, PublicKeyToken=f24c5e2578f0ecff, processorArchitecture=MSIL">
       <HintPath>..\packages\GeneticSharp.1.2.0\lib\net35\GeneticSharp.Infrastructure.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="GeneticSharp.Infrastructure.Threading, Version=1.1.6601.1439, Culture=neutral, PublicKeyToken=f24c5e2578f0ecff">
+    <Reference Include="GeneticSharp.Infrastructure.Threading, Version=1.1.6601.1439, Culture=neutral, PublicKeyToken=f24c5e2578f0ecff, processorArchitecture=MSIL">
       <HintPath>..\packages\GeneticSharp.1.2.0\lib\net35\GeneticSharp.Infrastructure.Threading.dll</HintPath>
     </Reference>
-    <Reference Include="NCalc, Version=1.3.8.0, Culture=neutral, PublicKeyToken=973cde3f1cafed03">
+    <Reference Include="NCalc, Version=1.3.8.0, Culture=neutral, PublicKeyToken=973cde3f1cafed03, processorArchitecture=MSIL">
       <HintPath>..\packages\GeneticSharp.1.2.0\lib\net35\NCalc.dll</HintPath>
     </Reference>
     <Reference Include="SmartThreadPool, Version=2.2.4.0, Culture=neutral, PublicKeyToken=1126fe8b671e8a79">
@@ -53,20 +57,27 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aviation\Aircraft.cs" />
-    <Compile Include="Aviation\Airport.cs" />
     <Compile Include="Genetics\Chromosome.cs" />
     <Compile Include="Genetics\Crossover.cs" />
     <Compile Include="Genetics\Fitness.cs" />
     <Compile Include="Genetics\Gene.cs" />
     <Compile Include="Genetics\Mutation.cs" />
+    <Compile Include="Genetics\CustomReinsertion.cs" />
+    <Compile Include="Genetics\Selection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\Aviation\Aircraft.cs" />
+    <Compile Include="Utils\Aviation\Airport.cs" />
+    <Compile Include="Utils\FileWriting.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -79,9 +90,6 @@
     <Content Include="Data\Airport2\Radar.csv" />
     <Content Include="Data\Airport2\Runways.csv" />
     <Content Include="Data\Airport2\Runway_landing_separation.csv" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Output" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
