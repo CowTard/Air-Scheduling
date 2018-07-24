@@ -176,6 +176,7 @@ namespace AirScheduling.Genetics
                 var desiredT = ((Gene) g.Value).Aircraft.GetDesiredLandingTime();
 
                 averageDelay += desiredT.Subtract(landingT).Duration();
+
             }
 
             var text =
@@ -193,7 +194,9 @@ namespace AirScheduling.Genetics
         {
 
             var genes = GetGenes();
+
             //var _ = genes.ToList().OrderBy( e => ((Gene) e.Value).Aircraft.GetNextFlightTime).ToArray();
+
             var _ = genes.ToList().OrderBy( e => ((Gene) e.Value).Aircraft.GetNextFlightTime()).ToArray();
             ReplaceGenes(0, _);
         }
