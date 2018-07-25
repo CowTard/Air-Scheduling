@@ -129,7 +129,7 @@ namespace AirScheduling.Genetics
             var exceedingTimeInMinutes = nextFlightTime - _estimatedLandingTime.TotalMinutes -
                                          minimumInterval.TotalMinutes;
 
-            return (81 + (150 * 37.6) / 60) * Math.Abs(exceedingTimeInMinutes);
+            return (81 + (Aircraft.GetAircraft().Passengers * 37.6) / 60) * Math.Abs(exceedingTimeInMinutes);
         }
 
         /// <summary>

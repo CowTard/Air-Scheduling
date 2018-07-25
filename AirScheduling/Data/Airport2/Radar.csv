@@ -2,7 +2,7 @@ flightID, distance, aircraftId, urgency, time of next flight (min), estimated
 F1,40000,1,false,60,35
 F2,40000,3,false,40,10
 F3,40000,3,false,35,5
-F4,40000,4,false,65,25
+F4,40000,2,false,65,25
 F5,40000,1,false,20,0
 F6,40000,1,true,30,0
 F7,40000,3,false,120,60

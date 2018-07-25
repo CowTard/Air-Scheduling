@@ -22,22 +22,25 @@ namespace AirScheduling.Aviation
         public double MaxSpeed { get; }
         public double OptimalSpeed { get; }
         public double MinSpeed { get; }
+        public double Passengers { get; }
 
         /// <summary>
         /// Constructor of the class Aircraft
         /// </summary>
         /// <param name="aircraftType">Type of Aircraft <see cref="AircraftType"/></param>
         /// <param name="model">Model by which the aircraft is known</param>
-        /// <param name="maxSpeed">Max speed of this model in kmh</param>
-        /// <param name="optimalSpeed">The Stall speed of this model in kmh</param>
         /// <param name="minSpeed">The minimum speed of this model in kmh</param>
-        public Aircraft(AircraftType aircraftType, string model, double minSpeed, double optimalSpeed, double maxSpeed)
+        /// <param name="optimalSpeed">The Stall speed of this model in kmh</param>
+        /// <param name="maxSpeed">Max speed of this model in kmh</param>
+        /// <param name="passengers">Maximum number of passengers</param>
+        public Aircraft(AircraftType aircraftType, string model, double minSpeed, double optimalSpeed, double maxSpeed, double passengers)
         {
             _aircraftType = aircraftType;
             _model = model;
             MaxSpeed = maxSpeed;
             OptimalSpeed = optimalSpeed;
             MinSpeed = minSpeed;
+            Passengers = passengers;
         }
 
         /// <summary>

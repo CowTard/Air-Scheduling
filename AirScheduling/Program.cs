@@ -160,8 +160,9 @@ namespace AirScheduling
                     var minimumSpeed = double.Parse(splittedLine[3]);
                     var optimalSpeed = double.Parse(splittedLine[4]);
                     var maximumSpeed = double.Parse(splittedLine[5]);
+                    var numberOfPassengers = double.Parse(splittedLine[6]);
 
-                    var aircraftSpecification = new Aircraft(type, model, minimumSpeed, optimalSpeed, maximumSpeed);
+                    var aircraftSpecification = new Aircraft(type, model, minimumSpeed, optimalSpeed, maximumSpeed, numberOfPassengers);
                     _aircraftModels.Add(aircraftSpecification);
                 }
             }
