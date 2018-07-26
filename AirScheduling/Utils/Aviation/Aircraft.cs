@@ -137,9 +137,13 @@ namespace AirScheduling.Aviation
         /// Returns the distance between airport and aircraft
         /// </summary>
         /// <returns>Distance in KM to the airport</returns>
-        public double GetDistanceToAirport()
+        public double GetDistanceToAirport(Airport.Runway r)
         {
-            return this._distance;
+
+            var distanceToApproachRoad = r.Loc.Distance(location);
+
+            return distanceToApproachRoad + r.ApproachDistance;
+
         }
 
         /// <summary>

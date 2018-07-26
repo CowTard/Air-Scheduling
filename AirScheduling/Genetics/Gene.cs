@@ -72,6 +72,25 @@ namespace AirScheduling.Genetics
         }
 
         /// <summary>
+        /// Convertes AircraftSpeed used in a usable double speed
+        /// </summary>
+        /// <returns></returns>
+        public double GetNumericalSpeedInUse()
+        {
+            switch (usedSpeed)
+            {
+                    case AircraftSpeed.Min:
+                        return Aircraft.GetAircraft().MinSpeed;
+                    case AircraftSpeed.Optimal:
+                        return Aircraft.GetAircraft().OptimalSpeed;
+                    case AircraftSpeed.Max:
+                        return Aircraft.GetAircraft().MaxSpeed;
+                    default:
+                        return Aircraft.GetAircraft().OptimalSpeed;
+            }
+        }
+
+        /// <summary>
         /// Returns the aircraft object
         /// </summary>
         /// <returns></returns>
