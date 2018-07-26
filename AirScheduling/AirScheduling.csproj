@@ -75,6 +75,7 @@
     <Compile Include="Utils\Aviation\Aircraft.cs" />
     <Compile Include="Utils\Aviation\Airport.cs" />
     <Compile Include="Utils\FileWriting.cs" />
+    <Compile Include="Utils\Location.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -52,7 +53,7 @@ namespace AirScheduling
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
                 CrossoverProbability = 0.5f,
-                MutationProbability = 0.7f,
+                MutationProbability = 0.05f,
                 Termination = new TimeEvolvingTermination(TimeSpan.FromMinutes(0.1)),
                 Reinsertion = new CustomReinsertion(),
             };
@@ -192,21 +193,24 @@ namespace AirScheduling
 
                     foreach (var line in lines)
                     {
+                        
+                        var l = new Location();
                         var splittedLine = line.Split(',');
 
                         var flighId = splittedLine[0];
-                        var distanceToAirport = splittedLine[1];
+                        l.Latitude = double.Parse(splittedLine[1].Split(':')[0], CultureInfo.InvariantCulture);
+                        l.Longitude = double.Parse(splittedLine[1].Split(':')[1], CultureInfo.InvariantCulture);
                         var aircrafId = int.Parse(splittedLine[2]);
                         var urgency = bool.Parse(splittedLine[3]);
                         var timeNextFlight = double.Parse(splittedLine[4]);
-                        var time = TimeSpan.FromMinutes(double.Parse(splittedLine[5]));
+                        var desiredLandingTime = TimeSpan.FromMinutes(double.Parse(splittedLine[5]));
 
                         if (_currentAirport.Radar.ContainsKey(flighId))
                             continue;
 
-                        var aicraftInRadar = new AircraftRadar(flighId, distanceToAirport,
+                        var aicraftInRadar = new AircraftRadar(flighId,
                             _aircraftModels[aircrafId - 1],
-                            timeNextFlight, urgency, time);
+                            timeNextFlight, urgency, desiredLandingTime, l);
 
                         _currentAirport.Radar.TryAdd(flighId, aicraftInRadar);
                     }
@@ -287,12 +291,23 @@ namespace AirScheduling
         /// </summary>
         /// <param name="fileUrl">Url for the file to be read</param>
         /// <returns>Dictionary of runwayID, length</returns>
-        private static Dictionary<string, double> read_landing_distances(string fileUrl)
+        private static Dictionary<string, (string, double)> read_landing_distances(string fileUrl)
         {
+            var dic = new Dictionary<string, (string, double)>();
             var lines = File.ReadAllLines(fileUrl).Skip(1).ToArray();
 
-            return lines.Select(line => line.Split(','))
-                .ToDictionary(info => info[0], info => double.Parse(info[1].Trim()));
+            foreach (var line in lines)
+            {
+                var inf = line.Split(',');
+                
+                var id = inf[0];
+                var loc = inf[1];
+                var approachDist = Double.Parse(inf[2], CultureInfo.InvariantCulture);
+                
+                dic.Add(id, (loc, approachDist));
+            }
+
+            return dic;
         }
 
         /// <summary>

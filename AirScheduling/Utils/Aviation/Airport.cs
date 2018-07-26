@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using AirScheduling.Utils;
 
 namespace AirScheduling.Aviation
 {
@@ -9,7 +11,6 @@ namespace AirScheduling.Aviation
     {
         private Random rnd;
         public Dictionary<string, Runway> Runways { get; }
-        private Dictionary<string, double> LandingTimes { get; }
         public ConcurrentDictionary<string, AircraftRadar> Radar { get; set; }
         public bool Ready;
 
@@ -17,12 +18,18 @@ namespace AirScheduling.Aviation
         /// Default constructor
         /// </summary>
         /// <param name="runways">Dictionary of all the runways</param>
-        public Airport(Dictionary<string, Runway> runways, Dictionary<string, double> landingTimes)
+        public Airport(Dictionary<string, Runway> runways, Dictionary<string, (string, double)> landingTimes)
         {
             Runways = runways;
-            LandingTimes = landingTimes;
             Radar = new ConcurrentDictionary<string, AircraftRadar>();
             Ready = false;
+
+            foreach (var key in landingTimes.Keys)
+            {
+                Runways[key].ApproachDistance = landingTimes[key].Item2;
+                Runways[key].Loc.Latitude = double.Parse(landingTimes[key].Item1.Split(':')[0], CultureInfo.InvariantCulture);
+                Runways[key].Loc.Longitude = double.Parse(landingTimes[key].Item1.Split(':')[1], CultureInfo.InvariantCulture);
+            }
             
             rnd = new Random();
         }
@@ -58,8 +65,7 @@ namespace AirScheduling.Aviation
         /// <returns></returns>
         public double GetApproachLength(string runway)
         {
-            LandingTimes.TryGetValue(runway, out var value);
-            return value;
+            return Runways[runway].ApproachDistance;
         }
 
         /// <summary>
@@ -69,6 +75,9 @@ namespace AirScheduling.Aviation
         {
             private readonly string _identication;
             private Dictionary<string, bool> _permissions;
+            public double ApproachDistance;
+            public Location Loc;
+            
 
             /// <summary>
             /// Dictionary of (runway, runway) (aircraf's type, aircraft's  type) (int)

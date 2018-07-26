@@ -1,4 +1,5 @@
 ﻿using System;
+using AirScheduling.Utils;
 
 namespace AirScheduling.Aviation
 {
@@ -81,6 +82,7 @@ namespace AirScheduling.Aviation
         private readonly Aircraft _aircraft;
         private readonly double _timeOfNextFlight;
         private readonly bool _emergency;
+        private readonly Location location;
 
         private readonly TimeSpan _time;
 
@@ -88,21 +90,22 @@ namespace AirScheduling.Aviation
         /// Constructor of the class
         /// </summary>
         /// <param name="flightId">Flight Identification</param>
-        /// <param name="distanceToAirport">Distance in meters that separates the aircraft and the airport</param>
         /// <param name="aircraft">Object of the class <see cref="Aircraft"/></param>
         /// <param name="timeOfNextFlight">Time left in minutes for the next flight of this aircraft in minutes</param>
         /// <param name="emergency">Whether aircraft is in emergengy mode or not </param>
-        public AircraftRadar(string flightId, string distanceToAirport, Aircraft aircraft, double timeOfNextFlight,
-            bool emergency, TimeSpan time)
+        /// <param name="desiredLandingTime"></param>
+        /// <param name="loc">Current location in Decimal Degrees</param>
+        public AircraftRadar(string flightId, Aircraft aircraft, double timeOfNextFlight,
+            bool emergency, TimeSpan desiredLandingTime, Location loc)
         {
             _aircraft = aircraft;
-            double.TryParse(distanceToAirport, out _distance);
             // Convert to km
             _distance = _distance / 1000;
             _timeOfNextFlight = timeOfNextFlight;
             _emergency = emergency;
             _flightId = flightId;
-            _time = time;
+            _time = desiredLandingTime;
+            location = loc;
         }
 
         /// <summary>

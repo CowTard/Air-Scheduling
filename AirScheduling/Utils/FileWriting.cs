@@ -15,6 +15,7 @@ namespace AirScheduling.Utils
             using (TextWriter tw = new StreamWriter(filename, true))
             {
                 tw.WriteLine(data);
+                tw.Flush();
             }
         }
 

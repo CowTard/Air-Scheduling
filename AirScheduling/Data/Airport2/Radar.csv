@@ -1,9 +1,9 @@
-flightID, distance, aircraftId, urgency, time of next flight (min), estimated
-F1,40000,1,false,60,35
-F2,40000,3,false,40,10
-F3,40000,3,false,35,5
-F4,40000,2,false,65,25
-F5,40000,1,false,20,0
-F6,40000,1,true,30,0
-F7,40000,3,false,120,60
-F8,40000,3,false,150,60
+flightID, location, aircraftId, urgency,time of next flight (min), estimated
+F1,40.151:82.588,1,false,60,35
+F2,40.3638:83.2328,3,false,40,10
+F3,39.9135:82.88825,3,false,35,5
+F4,39.75218:83.15396,2,false,65,25
+F5,39.7005:82.404,1,false,20,0
+F6,39.7535:82.1422,1,true,30,0
+F7,39.9135:82.88825,3,false,120,60
+F8,39.7535:82.1422,3,false,150,60
