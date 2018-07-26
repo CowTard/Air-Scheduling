@@ -13,6 +13,7 @@ namespace AirScheduling.Genetics
         private TimeSpan _estimatedLandingTime;
         private Airport.Runway _runway;
 
+        public (bool, double) penaltyForHavingToWait;
         public double Cost;
 
         public Gene(AircraftRadar aircraft, Airport.Runway runway, TimeSpan estimatedLandingTime)
@@ -106,6 +107,8 @@ namespace AirScheduling.Genetics
         private void CalculateFitnessFunction()
         {
             Cost = 0;
+            
+            IncrementCost(CalculateDelayNecessaryFitness());
             IncrementCost(CalculateArrivalFitness());
             IncrementCost(CalculateTripArrivalFitness());
             IncrementCost(CalculateRunwayFitness());
@@ -170,6 +173,21 @@ namespace AirScheduling.Genetics
             return _runway.PossibilityOfLanding(Aircraft.GetAircraft().GetAircraftType().ToString())
                 ? 0
                 : double.MaxValue;
+        }
+
+        /// <summary>
+        /// Calculates the value to be added if there is a penalty necessary
+        /// </summary>
+        /// <returns></returns>
+        private double CalculateDelayNecessaryFitness()
+        {
+            if (penaltyForHavingToWait.Item1)
+            {
+                // FUEL
+                return penaltyForHavingToWait.Item2 * 20;
+            }
+
+            return 0;
         }
 
         /// <summary>

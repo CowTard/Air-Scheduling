@@ -47,10 +47,11 @@ namespace AirScheduling.Genetics
 
                     var distanceToCover = currentGene.GetRadarAircraft().GetDistanceToAirport(currentGene.GetRunway());
 
-                    timeOfFirstLanding = TimeSpan.FromHours( distanceToCover / useSpeed);
+                    timeOfFirstLanding = TimeSpan.FromHours(distanceToCover / useSpeed);
 
                     arrayOfArrivals = Enumerable.Repeat(timeOfFirstLanding, arrayOfArrivals.Length).ToArray();
-                    
+
+                    ((Gene) _chromosome.GetGene(i).Value).penaltyForHavingToWait = (false, 0);
                     ((Gene) _chromosome.GetGene(i).Value).SetArrivalTime(timeOfFirstLanding);
                 }
                 else
@@ -62,13 +63,25 @@ namespace AirScheduling.Genetics
                     // Distances inherited
                     var distanceRequired =
                         runwayToLand.GetRequiredDistance(lastRunway, (currentAircType, lastAircrType));
-                    var distanceYetToTravel = TimeSpan.FromHours(currentGene.GetRadarAircraft().GetDistanceToAirport(runwayToLand) / useSpeed).TotalSeconds;
+                    var distanceYetToTravel = TimeSpan
+                        .FromHours(currentGene.GetRadarAircraft().GetDistanceToAirport(runwayToLand) / useSpeed)
+                        .TotalSeconds;
 
                     // Time to take into consideration
-                    
-                    var runwayIndex = _chromosome.GetAirport().ConvertRunwayInIndex(runwayToLand.GetIdentification());
-                    var _time = Math.Max(distanceRequired, distanceYetToTravel - arrayOfArrivals[runwayIndex].TotalSeconds);
 
+                    var runwayIndex = _chromosome.GetAirport().ConvertRunwayInIndex(runwayToLand.GetIdentification());
+                    var _time = Math.Max(distanceRequired,
+                        distanceYetToTravel - arrayOfArrivals[runwayIndex].TotalSeconds);
+
+                    if (_time == distanceRequired)
+                    {
+                        currentGene.penaltyForHavingToWait = (true,
+                            distanceRequired - (distanceYetToTravel - arrayOfArrivals[runwayIndex].TotalSeconds));
+                    }
+                    else
+                    {
+                        currentGene.penaltyForHavingToWait = (false, 0);
+                    }
 
                     for (var ti = 0; ti < arrayOfArrivals.Length; ti++)
                     {
