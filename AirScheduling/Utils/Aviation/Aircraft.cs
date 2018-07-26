@@ -13,6 +13,13 @@ namespace AirScheduling.Aviation
         Heavy
     }
 
+    public enum AircraftSpeed
+    {
+        Min,
+        Optimal,
+        Max
+    }
+
     /// <summary>
     /// Class holding information about a specific model of aircraft
     /// </summary>

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using AirScheduling.Aviation;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Mutations;
 
@@ -10,15 +11,17 @@ namespace AirScheduling.Genetics
 {
     public class Mutation : IMutation
     {
+        
+        Random rnd = new Random();
+        
         public void Mutate(IChromosome chromosome, float probability)
         {
-            var rnd = (new Random()).NextDouble();
-
-            if (!(rnd < probability)) return;
+            if (!(rnd.NextDouble() < probability)) return;
 
             var t = chromosome;
             chromosome = PerformeSequenceMutation(chromosome);
             PerformeRunwayMutation(chromosome);
+            PerformSpeedMutation(chromosome);
         }
 
         /// <summary>
@@ -60,7 +63,6 @@ namespace AirScheduling.Genetics
         {
             var chr = (Chromosome) chromosome;
 
-            var rnd = new Random();
             var indexToMutate = rnd.Next(chr.Length);
 
             var currentRunway = ((Gene) chr.GetGene(indexToMutate).Value).GetRunway().GetIdentification();
@@ -76,6 +78,29 @@ namespace AirScheduling.Genetics
             return chr;
         }
 
+        /// <summary>
+        /// Function responsible for mutating the speed of a current aircraft
+        /// </summary>
+        /// <param name="chromosome"></param>
+        /// <returns></returns>
+        private IChromosome PerformSpeedMutation(IChromosome chromosome)
+        {
+
+            var chr = (Chromosome) chromosome;
+            var indexToMutate = rnd.Next(chr.Length);
+
+            var currentSpeed = ((Gene) chr.GetGene(indexToMutate).Value).usedSpeed;
+            
+            var listOfSpeeds = Enum.GetValues(typeof(AircraftSpeed)).Cast<AircraftSpeed>().ToList();
+
+            listOfSpeeds.Remove(currentSpeed);
+            
+            ((Gene) chr.GetGene(indexToMutate).Value).MutateSpeed(listOfSpeeds[rnd.Next(0, listOfSpeeds.Count)]);
+
+            return chr;
+
+        }
+        
         public bool IsOrdered { get; }
     }
 }

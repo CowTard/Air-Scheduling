@@ -9,6 +9,7 @@ namespace AirScheduling.Genetics
     public class Gene
     {
         public AircraftRadar Aircraft { get; }
+        public AircraftSpeed usedSpeed = AircraftSpeed.Optimal;
         private TimeSpan _estimatedLandingTime;
         private Airport.Runway _runway;
 
@@ -59,6 +60,15 @@ namespace AirScheduling.Genetics
         public void MutateRunway(Airport.Runway runway)
         {
             this._runway = runway;
+        }
+
+        /// <summary>
+        /// Mutates the speed to the passed one
+        /// </summary>
+        /// <param name="t"></param>
+        public void MutateSpeed(AircraftSpeed t)
+        {
+            this.usedSpeed = t;
         }
 
         /// <summary>
