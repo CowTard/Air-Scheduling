@@ -170,6 +170,9 @@ namespace AirScheduling.Genetics
         /// <returns>0, if possible : 10000 if it's not possible for this type of aircraft to land on this runway</returns>
         private double CalculateRunwayFitness()
         {
+            
+            // Check if penalty from winds
+            
             return _runway.PossibilityOfLanding(Aircraft.GetAircraft().GetAircraftType().ToString())
                 ? 0
                 : double.MaxValue;

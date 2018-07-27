@@ -1,5 +1,5 @@
-Runway, Permissions
-10L,Heavy-Medium-Light
-10R,Heavy-Medium-Light
-28L,Heavy-Medium-Light
-28R,Heavy-Medium-Light
+Runway, Permissions, Group
+10L,Heavy-Medium-Light, 1
+10R,Heavy-Medium-Light, 1
+28L,Heavy-Medium-Light, 2
+28R,Heavy-Medium-Light, 2

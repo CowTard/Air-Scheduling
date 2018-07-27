@@ -243,9 +243,11 @@ namespace AirScheduling
 
                     var identification = splittedLine[0];
                     var permissions = splittedLine[1];
+                    var group = double.Parse(splittedLine[2].Trim());
 
-                    allRunways.Add(identification, new Airport.Runway(identification, permissions));
+                    allRunways.Add(identification, new Airport.Runway(identification, permissions, group));
                 }
+                
 
                 return allRunways;
             }
