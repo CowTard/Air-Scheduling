@@ -16,6 +16,10 @@ namespace AirScheduling
 {
     internal class AirScheduling
     {
+
+        public static string[] group1 = {"0:15", "40:60", "135:155"};
+        public static string[] group2 = {"15:40", "60:135", "155:400"};
+        
         private const string Airport = "2";
         private static List<Aircraft> _aircraftModels = new List<Aircraft>();
         private static Thread _radar;
@@ -243,7 +247,7 @@ namespace AirScheduling
 
                     var identification = splittedLine[0];
                     var permissions = splittedLine[1];
-                    var group = double.Parse(splittedLine[2].Trim());
+                    var group = int.Parse(splittedLine[2].Trim());
 
                     allRunways.Add(identification, new Airport.Runway(identification, permissions, group));
                 }

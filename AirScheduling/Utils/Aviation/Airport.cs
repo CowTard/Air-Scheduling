@@ -77,7 +77,7 @@ namespace AirScheduling.Aviation
             private Dictionary<string, bool> _permissions;
             public double ApproachDistance;
             public Location Loc;
-            public double RnwGroup;
+            public int RnwGroup;
             
             /// <summary>
             /// Dictionary of (runway, runway) (aircraf's type, aircraft's  type) (int)
@@ -90,7 +90,7 @@ namespace AirScheduling.Aviation
             /// <param name="identication">Indentification of the runway</param>
             /// <param name="permissions">A string separed by '-' containing whether or not an aircraft of type n can
             /// land on this runway</param>
-            public Runway(string identication, string permissions, double group)
+            public Runway(string identication, string permissions, int group)
             {
                 this._identication = identication;
                 _permissions = new Dictionary<string, bool>

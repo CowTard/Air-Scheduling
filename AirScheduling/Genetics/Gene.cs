@@ -170,11 +170,30 @@ namespace AirScheduling.Genetics
         /// <returns>0, if possible : 10000 if it's not possible for this type of aircraft to land on this runway</returns>
         private double CalculateRunwayFitness()
         {
-            
+            double penalty = 100000;
             // Check if penalty from winds
+            var windTimes = _runway.RnwGroup == 1 ? AirScheduling.group1 : AirScheduling.group2;
+
+            foreach (var t in windTimes)
+            {
+                var t1 = TimeSpan.FromMinutes(double.Parse(t.Split(':')[0]));
+                var t2 = TimeSpan.FromMinutes(double.Parse(t.Split(':')[1]));
+
+                if (_estimatedLandingTime >= t1 && _estimatedLandingTime < t2)
+                {
+                    penalty = 0;
+                }
+
+                if (_estimatedLandingTime < t1)
+                    break;
+            }
+            
+            if (penalty != 0)
+                Console.Write("");
+            
             
             return _runway.PossibilityOfLanding(Aircraft.GetAircraft().GetAircraftType().ToString())
-                ? 0
+                ? 0 + penalty
                 : double.MaxValue;
         }
 
