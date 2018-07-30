@@ -12,6 +12,8 @@ namespace AirScheduling.Genetics
     {
         private readonly Airport _airport;
         public Dictionary<string, string> LastLanding { get; }
+        private Random rnd = new Random();
+        private bool IsFifo;
 
         /// <summary>
         /// Construtor that receives an airport radar
@@ -22,8 +24,10 @@ namespace AirScheduling.Genetics
             _airport = airport;
             LastLanding = new Dictionary<string, string>(airport.Runways.Count);
             GenerateAllGenes();
+
+            IsFifo = fifo;
             
-            if (!fifo)
+            if (!IsFifo)
                 SortChromosome();
             Fitness = null;
         }
@@ -60,8 +64,11 @@ namespace AirScheduling.Genetics
         {
             for (var i = 0; i < _airport.Radar.Count; i++)
             {
-                ReplaceGene(i, GenerateGene(i));
+                var GeneToCreate = GenerateGene(i);
+                
+                ReplaceGene(i, GeneToCreate);
             }
+            
         }
 
         /// <summary>
@@ -71,8 +78,10 @@ namespace AirScheduling.Genetics
         /// <returns>A new gene</returns>
         public override GeneticSharp.Domain.Chromosomes.Gene GenerateGene(int geneIndex)
         {
+            var rnw = _airport.GetRandomRunway();
+            
             var geneInformation = new Gene(_airport.Radar[_airport.Radar.Keys.ElementAt(geneIndex)],
-                _airport.GetRandomRunway(), TimeSpan.Zero);
+                rnw, TimeSpan.Zero);
 
             return new GeneticSharp.Domain.Chromosomes.Gene(geneInformation);
         }
@@ -151,7 +160,6 @@ namespace AirScheduling.Genetics
             
             curChromosome.InsertRange(0, genes);
 
-            Debug.Assert(curChromosome.Count == 8);
             return curChromosome;
         }
 
@@ -181,8 +189,8 @@ namespace AirScheduling.Genetics
 
             var text =
                 $"{((Gene) t[t.Count - 1].Value).GetArrivalTime()}, " +
-                $"{new TimeSpan(averageDelay.Ticks / 8)}, " +
-                $"{(averageCost / 8).ToString("C", CultureInfo.CurrentCulture)}";
+                $"{new TimeSpan(averageDelay.Ticks / GetGenes().Length)}, " +
+                $"{(averageCost / GetGenes().Length).ToString("C", CultureInfo.CurrentCulture)}";
             
             return text;
         }
@@ -197,8 +205,28 @@ namespace AirScheduling.Genetics
 
             //var _ = genes.ToList().OrderBy( e => ((Gene) e.Value).Aircraft.GetNextFlightTime).ToArray();
 
-            var _ = genes.ToList().OrderBy( e => ((Gene) e.Value).Aircraft.GetNextFlightTime()).ToArray();
-            ReplaceGenes(0, _);
+            //var _ = genes.ToList().OrderBy( e => ((Gene) e.Value).Aircraft.GetNextFlightTime()).ToArray();
+
+            for (var i = 0; i < genes.Length; i++)
+            {
+
+                Airport.Runway rnw = null;
+                var firstGroupRunway = new Airport.Runway[] {_airport.Runways["10L"], _airport.Runways["10R"]};
+                var secondGroupRunway = new Airport.Runway[] {_airport.Runways["28L"], _airport.Runways["28R"]};
+
+                if (i < 7)
+                    rnw = firstGroupRunway[rnd.Next(firstGroupRunway.Length)];
+                else if (i >= 7 && i < 14)
+                    rnw = secondGroupRunway[rnd.Next(secondGroupRunway.Length)];
+                else if (i >= 14 && i < 20)
+                    rnw = firstGroupRunway[rnd.Next(firstGroupRunway.Length)];
+                else if (i >= 20 && i < 45)
+                    rnw = secondGroupRunway[rnd.Next(secondGroupRunway.Length)];
+                
+                ((Gene)genes[i].Value).SetRunway(rnw);
+            }
+            
+            ReplaceGenes(0, genes);
         }
 
         public override bool Equals(object obj)

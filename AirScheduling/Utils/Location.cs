@@ -9,6 +9,11 @@ namespace AirScheduling.Utils
         public double Longitude;
         public const double Altitude = 0;
 
+        public Location(double l, double lo)
+        {
+            Latitude = l;
+            Longitude = lo;
+        }
 
         private static double deg2rad(double deg)
         {
